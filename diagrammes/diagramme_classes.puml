@@ -1,6 +1,7 @@
 @startuml DiagrammeClasses
 title Diagramme de Classes - Application de Location de Voitures
 
+skinparam dpi 150
 skinparam classAttributeIconSize 0
 skinparam classFontStyle bold
 skinparam linetype ortho
@@ -200,7 +201,7 @@ Location "1" *-- "0..1" ConducteurSecondaire : autorise >
 ' --- OneToOne agregation faible (cascade PERSIST+MERGE, pas REMOVE) ---
 ' Permis survit a la suppression du Client (preserve le ban) -> agregation,
 ' pas composition.
-Client "0..1" o-- "0..1" Permis : possede >
+Client "0..1" o-- "0..1" Permis : detient >
 
 ' --- OneToOne inverse, FK nullable (Avis.location_id nullable depuis le
 '     decouplage : un Avis peut survivre orphelin a la suppression de la

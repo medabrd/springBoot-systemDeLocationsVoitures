@@ -192,15 +192,27 @@ Utilisateur <|-- Admin
 ' ASSOCIATIONS
 ' ============================================================
 
-' --- OneToOne ---
-Client "0..1" -- "0..1" Permis : possede >
-Voiture "1" -- "1" DetailsVoiture : decrite par >
-Location "1" -- "0..1" Avis : recoit >
-Location "1" -- "0..1" ConducteurSecondaire : autorise >
+' --- Composition (cascade=ALL + orphanRemoval : le tout possede et controle
+'     le cycle de vie de la partie) ---
+Voiture "1" *-- "1" DetailsVoiture : decrite par >
+Location "1" *-- "0..1" ConducteurSecondaire : autorise >
+
+' --- OneToOne agregation faible (cascade PERSIST+MERGE, pas REMOVE) ---
+' Permis survit a la suppression du Client (preserve le ban) -> agregation,
+' pas composition.
+Client "0..1" o-- "0..1" Permis : possede >
+
+' --- OneToOne inverse, FK nullable (Avis.location_id nullable depuis le
+'     decouplage : un Avis peut survivre orphelin a la suppression de la
+'     Location par l'admin) ---
+Location "0..1" -- "0..1" Avis : recoit >
 
 ' --- OneToMany / ManyToOne ---
-' FK Location.client_id et Location.voiture_id sont nullables
-' (decouplage : suppression d'un Client ou d'une Voiture preserve l'historique)
+' Note : FK NOT NULL pour Voiture.marque_id, Voiture.categorie_id,
+' ConducteurSecondaire.permis_id (relations obligatoires cote enfant).
+' FK NULLABLE pour Location.client_id, Location.voiture_id, Reclamation.location_id,
+' Permis.admin_bannisseur_id (decouplage : suppression de l'entite parente
+' preserve l'historique enfant avec FK = NULL).
 Marque "1" --> "0..*" Voiture : possede
 Categorie "1" --> "0..*" Voiture : classifie
 Client "0..1" --> "0..*" Location : effectue
@@ -209,7 +221,7 @@ Location "0..1" --> "0..*" Reclamation : genere
 Permis "1" --> "0..*" ConducteurSecondaire : utilise par
 Admin "0..1" --> "0..*" Permis : a banni
 
-' --- ManyToMany (bidirectionnelle) ---
+' --- ManyToMany (bidirectionnelle, table de jointure voiture_equipement) ---
 Voiture "0..*" -- "0..*" Equipement : equipee de
 
 ' --- Liens enums (typage des attributs) ---

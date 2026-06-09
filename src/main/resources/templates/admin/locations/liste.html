@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Locations')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<div th:replace="~{fragments/layout :: alerts}"></div>
+
+<main class="container py-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <h2><i class="fa-solid fa-clipboard-list me-2 text-primary"></i> Locations</h2>
+        <a th:href="@{/admin/locations/nouveau}" class="btn btn-primary">
+            <i class="fa-solid fa-plus me-1"></i>Nouvelle location
+        </a>
+    </div>
+
+    <!-- Filtres par statut -->
+    <div class="d-flex flex-wrap gap-2 my-3">
+        <a th:href="@{/admin/locations}"
+           class="btn btn-sm"
+           th:classappend="${filtreStatut == null} ? 'btn-primary' : 'btn-outline-primary'">
+            Toutes
+        </a>
+        <a th:each="s : ${statuts}"
+           th:href="@{|/admin/locations?statut=${s}|}"
+           class="btn btn-sm"
+           th:classappend="${filtreStatut == s} ? 'btn-primary' : 'btn-outline-primary'"
+           th:text="${s}">STATUT</a>
+    </div>
+
+    <div class="card border-0 shadow-sm" th:unless="${locations.empty}">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                <tr><th>#</th><th>Date</th><th>Client</th><th>Voiture</th><th>Periode</th><th>Total</th><th>Statut</th><th></th></tr>
+                </thead>
+                <tbody>
+                <tr th:each="l : ${locations.content}">
+                    <td><strong>#<span th:text="${l.id}"></span></strong></td>
+                    <td><small th:text="${#temporals.format(l.dateCreation, 'dd/MM/yyyy HH:mm')}"></small></td>
+                    <td>
+                        <span th:if="${l.client != null}"
+                              th:text="${l.client.prenom + ' ' + l.client.nom}"></span>
+                        <span th:unless="${l.client != null}" class="text-muted small fst-italic">Client supprime</span>
+                        <br th:if="${l.client != null}"/>
+                        <small class="text-muted" th:if="${l.client != null}" th:text="${l.client.email}"></small>
+                    </td>
+                    <td>
+                        <span th:if="${l.voiture != null}"
+                              th:text="${l.voiture.marque.nom + ' ' + l.voiture.modele}"></span>
+                        <span th:unless="${l.voiture != null}" class="text-muted small fst-italic">Vehicule supprime</span>
+                        <br th:if="${l.voiture != null}"/>
+                        <small class="text-muted" th:if="${l.voiture != null}" th:text="${l.voiture.immatriculation}"></small>
+                    </td>
+                    <td>
+                        <small>
+                            <span th:text="${#temporals.format(l.dateDebut, 'dd/MM')}"></span> -
+                            <span th:text="${#temporals.format(l.dateFin, 'dd/MM/yyyy')}"></span>
+                            (<span th:text="${l.nombreJours}"></span>j)
+                        </small>
+                    </td>
+                    <td><strong th:text="${l.prixTotal} + ' DT'"></strong></td>
+                    <td>
+                        <span class="badge badge-statut" th:classappend="'badge-' + ${l.statut}" th:text="${l.statut}"></span>
+                    </td>
+                    <td class="text-nowrap">
+                        <a th:href="@{|/admin/locations/${l.id}|}" class="btn btn-sm btn-outline-primary" title="Voir">
+                            <i class="fa-solid fa-eye"></i>
+                        </a>
+                        <form th:action="@{|/admin/locations/${l.id}/supprimer|}" method="post" class="d-inline"
+                              onsubmit="return confirm('Supprimer cette location ? Avis et reclamations associes seront conserves.')">
+                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Supprimer">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div th:if="${locations.empty}" class="alert alert-info text-center">Aucune location.</div>
+
+    <div th:replace="~{fragments/pagination :: paginer(${locations}, ${urlBase})}"></div>
+
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

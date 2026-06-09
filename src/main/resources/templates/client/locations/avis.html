@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Donner mon avis')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<div th:replace="~{fragments/layout :: bannerBanni}"></div>
+<div th:replace="~{fragments/layout :: alerts}"></div>
+
+<main class="container py-4">
+
+    <a th:href="@{|/client/locations/${location.id}|}" class="text-muted text-decoration-none mb-3 d-inline-block">
+        <i class="fa-solid fa-arrow-left me-1"></i> Retour
+    </a>
+
+    <h2><i class="fa-solid fa-star me-2 text-warning"></i> Donner mon avis</h2>
+    <p class="text-muted">
+        Location #<span th:text="${location.id}"></span> -
+        <span th:text="${location.voiture.marque.nom + ' ' + location.voiture.modele}"></span>
+    </p>
+
+    <div class="card border-0 shadow-sm mt-3">
+        <div class="card-body">
+            <form th:action="@{|/client/locations/${location.id}/avis|}" th:object="${avisForm}" method="post" novalidate>
+
+                <div class="mb-4">
+                    <label class="form-label required-mark fw-bold">Votre note</label>
+                    <div class="d-flex gap-2 align-items-center" id="rating-container">
+                        <div class="form-check form-check-inline" th:each="i : ${#numbers.sequence(1, 5)}">
+                            <input class="form-check-input" type="radio" th:field="*{note}" th:value="${i}" th:id="'note' + ${i}"/>
+                            <label class="form-check-label" th:for="'note' + ${i}">
+                                <span th:text="${i}"></span> <i class="fa-solid fa-star text-warning"></i>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="text-danger small" th:if="${#fields.hasErrors('note')}" th:errors="*{note}"></div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label required-mark fw-bold">Votre commentaire</label>
+                    <textarea class="form-control" rows="5"
+                              th:field="*{commentaire}"
+                              th:classappend="${#fields.hasErrors('commentaire')} ? 'is-invalid'"
+                              placeholder="Partagez votre experience..." maxlength="500"></textarea>
+                    <div class="invalid-feedback" th:errors="*{commentaire}"></div>
+                    <small class="text-muted">Max 500 caracteres</small>
+                </div>
+
+                <div class="text-end">
+                    <a th:href="@{|/client/locations/${location.id}|}" class="btn btn-outline-secondary me-2">Annuler</a>
+                    <button type="submit" class="btn btn-warning">
+                        <i class="fa-solid fa-paper-plane me-2"></i>Publier mon avis
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

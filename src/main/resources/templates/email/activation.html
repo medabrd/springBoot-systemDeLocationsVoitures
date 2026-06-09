@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Activation de votre compte</title>
+</head>
+<body style="font-family: Arial, sans-serif; background:#f4f4f4; margin:0; padding:20px;">
+    <div style="max-width:600px; margin:auto; background:#fff; padding:30px; border-radius:8px;">
+        <h2 style="color:#0d6efd; margin-top:0;">Bienvenue chez Agence Location Voitures</h2>
+        <p>Bonjour <strong th:text="${prenom + ' ' + nom}">Prenom Nom</strong>,</p>
+        <p>Merci de votre inscription. Pour activer votre compte, cliquez sur le lien ci-dessous :</p>
+        <p style="text-align:center; margin:30px 0;">
+            <a th:href="${lien}" style="background:#0d6efd; color:#fff; padding:12px 24px; text-decoration:none; border-radius:4px;">
+                Activer mon compte
+            </a>
+        </p>
+        <p style="font-size:12px; color:#666;">Ce lien est unique et ne doit etre utilise qu'une seule fois. Si vous n'etes pas a l'origine de cette inscription, ignorez ce mail.</p>
+        <hr style="border:none; border-top:1px solid #eee; margin:30px 0;">
+        <p style="font-size:11px; color:#999; text-align:center;">Agence Location Voitures - Mini-projet Spring Boot</p>
+    </div>
+</body>
+</html>

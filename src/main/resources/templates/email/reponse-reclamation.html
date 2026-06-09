@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><title>Reponse a votre reclamation</title></head>
+<body style="font-family: Arial, sans-serif; background:#f4f4f4; margin:0; padding:20px;">
+<div style="max-width:600px; margin:auto; background:#fff; padding:30px; border-radius:8px;">
+    <h2 style="color:#0d6efd;">Reponse a votre reclamation</h2>
+    <p>Bonjour <strong th:text="${prenom + ' ' + nom}"></strong>,</p>
+    <p>Nous avons traite votre reclamation. Voici notre reponse :</p>
+
+    <div style="background:#f8f9fa; padding:15px; border-radius:6px; margin:20px 0;">
+        <p style="margin:5px 0;"><strong>Categorie :</strong> <span th:text="${categorie}"></span></p>
+        <p style="margin:5px 0;"><strong>Statut :</strong> <span th:text="${statut}"></span></p>
+        <p style="margin:5px 0;"><strong>Votre description :</strong></p>
+        <p style="margin:5px 0; white-space:pre-wrap; color:#666;" th:text="${description}"></p>
+    </div>
+
+    <div style="background:#d1e7dd; border-left:4px solid #198754; padding:12px 16px; margin:20px 0; border-radius:4px;">
+        <p style="margin:0;"><strong>Notre reponse :</strong></p>
+        <p style="margin:5px 0 0; white-space:pre-wrap;" th:text="${reponse}"></p>
+    </div>
+
+    <p>Vous pouvez retrouver l'historique complet de vos reclamations dans votre espace client.</p>
+    <p>Cordialement,</p>
+    <p>L'equipe Agence Location Voitures</p>
+</div>
+</body></html>

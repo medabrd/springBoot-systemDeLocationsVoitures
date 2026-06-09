@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Utilisateurs')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<div th:replace="~{fragments/layout :: alerts}"></div>
+
+<main class="container py-4">
+
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <h2 class="mb-0"><i class="fa-solid fa-users me-2 text-primary"></i> Utilisateurs (clients)</h2>
+        <a th:href="@{/admin/utilisateurs/nouveau}" class="btn btn-primary">
+            <i class="fa-solid fa-user-plus me-1"></i>Ajouter un client
+        </a>
+    </div>
+
+    <form th:action="@{/admin/utilisateurs}" method="get" class="row g-2 my-4">
+        <div class="col-md-9">
+            <input type="text" class="form-control" name="keyword" th:value="${keyword}"
+                   placeholder="Rechercher par email, nom, prenom ou permis..."/>
+        </div>
+        <div class="col-md-3 d-grid">
+            <button type="submit" class="btn btn-primary">
+                <i class="fa-solid fa-magnifying-glass me-1"></i>Rechercher
+            </button>
+        </div>
+    </form>
+
+    <div class="card border-0 shadow-sm" th:unless="${utilisateurs.empty}">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                <tr><th>Inscription</th><th>Nom</th><th>Email</th><th>Permis</th><th>Actif</th><th></th></tr>
+                </thead>
+                <tbody>
+                <tr th:each="u : ${utilisateurs.content}">
+                    <td><small th:text="${#temporals.format(u.dateInscription, 'dd/MM/yyyy')}"></small></td>
+                    <td>
+                        <strong th:text="${u.prenom + ' ' + u.nom}"></strong>
+                    </td>
+                    <td><small th:text="${u.email}"></small></td>
+                    <td>
+                        <code th:if="${u.numeroPermis != null}" th:text="${u.numeroPermis}"></code>
+                        <small class="text-muted" th:unless="${u.numeroPermis != null}">-</small>
+                    </td>
+                    <td>
+                        <span class="badge bg-success" th:if="${u.actif}">Active</span>
+                        <span class="badge bg-warning text-dark" th:unless="${u.actif}">Non active</span>
+                    </td>
+                    <td class="text-nowrap">
+                        <a th:href="@{|/admin/utilisateurs/${u.id}|}" class="btn btn-sm btn-outline-primary" title="Voir">
+                            <i class="fa-solid fa-eye"></i>
+                        </a>
+
+                        <!-- Debannir : visible uniquement si le permis est dans la liste noire -->
+                        <form th:if="${u.numeroPermis != null and permisBannis.contains(u.numeroPermis)}"
+                              th:action="@{|/admin/utilisateurs/${u.id}/debannir|}" method="post" class="d-inline"
+                              onsubmit="return confirm('Debannir ce client ?')">
+                            <input type="hidden" name="numeroPermis" th:value="${u.numeroPermis}"/>
+                            <button type="submit" class="btn btn-sm btn-outline-success" title="Debannir">
+                                <i class="fa-solid fa-circle-check"></i>
+                            </button>
+                        </form>
+
+                        <!-- Bannir : toujours visible quand non banni. Si pas de permis en base, le JS le demande -->
+                        <form th:unless="${u.numeroPermis != null and permisBannis.contains(u.numeroPermis)}"
+                              th:action="@{|/admin/utilisateurs/${u.id}/bannir|}" method="post" class="d-inline"
+                              onsubmit="return submitBan(this)">
+                            <input type="hidden" name="numeroPermis" th:value="${u.numeroPermis}"/>
+                            <input type="hidden" name="motif" value=""/>
+                            <button type="submit" class="btn btn-sm btn-outline-warning" title="Bannir">
+                                <i class="fa-solid fa-ban"></i>
+                            </button>
+                        </form>
+
+                        <form th:action="@{|/admin/utilisateurs/${u.id}/supprimer|}" method="post" class="d-inline"
+                              onsubmit="return confirm('Supprimer ce compte client ? Action irreversible.')">
+                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Supprimer">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div th:if="${utilisateurs.empty}" class="alert alert-info text-center">Aucun utilisateur trouve.</div>
+
+    <div th:replace="~{fragments/pagination :: paginer(${utilisateurs}, ${urlBase})}"></div>
+
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+<script>
+function submitBan(form) {
+    var permisInput = form.querySelector('input[name="numeroPermis"]');
+    // Permis manquant en base -> demander a l'admin de le saisir
+    if (!permisInput.value || permisInput.value.trim() === '') {
+        var permis = prompt('Numero de permis a bannir :');
+        if (permis === null || permis.trim() === '') return false;
+        permisInput.value = permis.trim();
+    }
+    var motif = prompt('Motif du bannissement :');
+    if (motif === null || motif.trim() === '') return false;
+    form.querySelector('input[name="motif"]').value = motif.trim();
+    return true;
+}
+</script>
+</body>
+</html>

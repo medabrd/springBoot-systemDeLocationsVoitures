@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Reinitialisation de votre mot de passe</title>
+</head>
+<body style="font-family: Arial, sans-serif; background:#f4f4f4; margin:0; padding:20px;">
+    <div style="max-width:600px; margin:auto; background:#fff; padding:30px; border-radius:8px;">
+        <h2 style="color:#0d6efd; margin-top:0;">Reinitialisation de votre mot de passe</h2>
+        <p>Bonjour <strong th:text="${prenom + ' ' + nom}">Prenom Nom</strong>,</p>
+        <p>Une demande de reinitialisation de mot de passe a ete effectuee pour votre compte. Cliquez sur le lien ci-dessous pour choisir un nouveau mot de passe :</p>
+        <p style="text-align:center; margin:30px 0;">
+            <a th:href="${lien}" style="background:#0d6efd; color:#fff; padding:12px 24px; text-decoration:none; border-radius:4px;">
+                Reinitialiser mon mot de passe
+            </a>
+        </p>
+        <p style="font-size:12px; color:#666;">
+            Ce lien est valide jusqu'au
+            <strong th:text="${#temporals.format(expiration, 'dd/MM/yyyy HH:mm')}">date</strong>
+            (1 heure). Apres cette date, vous devrez refaire une demande.
+        </p>
+        <p style="font-size:12px; color:#666;">Si vous n'etes pas a l'origine de cette demande, ignorez simplement ce mail : votre mot de passe actuel reste inchange.</p>
+        <hr style="border:none; border-top:1px solid #eee; margin:30px 0;">
+        <p style="font-size:11px; color:#999; text-align:center;">Agence Location Voitures - Mini-projet Spring Boot</p>
+    </div>
+</body>
+</html>

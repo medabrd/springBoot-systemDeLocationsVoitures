@@ -1,0 +1,77 @@
+@startuml DiagrammeUseCaseClient
+title Diagramme de Cas d'Utilisation - Cote Client
+
+skinparam packageStyle rectangle
+skinparam actorStyle awesome
+skinparam usecaseFontSize 13
+
+actor "Visiteur" as V
+actor "Client" as C
+actor "Client Banni" as CB
+
+C --|> V
+CB --|> V
+
+rectangle "Application - Espace Public et Client" {
+
+  package "Authentification" {
+    usecase "S'inscrire" as UC_INSCR
+    usecase "Activer le compte\n(lien email)" as UC_ACT
+    usecase "Se connecter" as UC_LOGIN
+    usecase "Se deconnecter" as UC_LOGOUT
+    usecase "Demander reinitialisation\nde mot de passe\n(envoie lien email)" as UC_FORGOT
+    usecase "Reinitialiser mot de passe\n(via lien token, valide 1h)" as UC_RESET
+  }
+
+  package "Catalogue (public)" {
+    usecase "Consulter les voitures\n(pagination + recherche)" as UC_CAT
+    usecase "Voir details d'une voiture" as UC_DETAIL
+  }
+
+  package "Espace Client" {
+    usecase "Completer le profil\n(telephone, permis, CIN)" as UC_PROFIL
+    usecase "Soumettre une demande\nde location" as UC_DEMANDE
+    usecase "Ajouter un second\nconducteur" as UC_COND2
+    usecase "Consulter ses locations" as UC_HIST
+    usecase "Laisser un avis\n[location TERMINEE]" as UC_AVIS
+    usecase "Soumettre une\nreclamation\n[location EN_COURS]" as UC_RECLAM
+    usecase "Voir reponses aux\nreclamations" as UC_REPRECLAM
+  }
+
+  package "Mode Restreint (Banni)" {
+    usecase "Consulter profil\net historique\n(lecture seule)" as UC_RO
+    usecase "Voir motif de\nbannissement" as UC_MOTIF
+  }
+}
+
+' Liens Visiteur
+V --> UC_INSCR
+V --> UC_ACT
+V --> UC_LOGIN
+V --> UC_FORGOT
+V --> UC_RESET
+V --> UC_CAT
+V --> UC_DETAIL
+
+' Liens Client
+C --> UC_LOGOUT
+C --> UC_PROFIL
+C --> UC_DEMANDE
+C --> UC_HIST
+C --> UC_AVIS
+C --> UC_RECLAM
+C --> UC_REPRECLAM
+
+' Liens Client Banni
+CB --> UC_LOGOUT
+CB --> UC_RO
+CB --> UC_MOTIF
+
+' Include / Extend
+UC_DEMANDE ..> UC_PROFIL : <<include>>
+UC_DEMANDE <.. UC_COND2 : <<extend>>
+UC_AVIS ..> UC_HIST : <<include>>
+UC_RECLAM ..> UC_HIST : <<include>>
+UC_RESET ..> UC_FORGOT : <<precede>>
+
+@enduml

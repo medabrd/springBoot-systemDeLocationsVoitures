@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Mon profil')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<div th:replace="~{fragments/layout :: bannerBanni}"></div>
+<div th:replace="~{fragments/layout :: alerts}"></div>
+
+<main class="container py-4">
+
+    <a th:href="@{/client/profil}" class="text-muted text-decoration-none mb-3 d-inline-block">
+        <i class="fa-solid fa-arrow-left me-1"></i> Retour au profil
+    </a>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fa-solid fa-pen me-2 text-primary"></i> Modifier mon profil</h2>
+        <span th:if="${profilComplet}" class="badge bg-success">
+            <i class="fa-solid fa-circle-check me-1"></i> Profil complet
+        </span>
+        <span th:unless="${profilComplet}" class="badge bg-warning text-dark">
+            <i class="fa-solid fa-circle-exclamation me-1"></i> Profil incomplet
+        </span>
+    </div>
+
+    <!-- Form mise a jour profil -->
+    <form th:action="@{/client/profil}" method="post" enctype="multipart/form-data">
+
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-body">
+                <h5 class="card-title mb-3"><i class="fa-solid fa-circle-user me-2"></i>Compte</h5>
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label required-mark">Prenom</label>
+                        <input type="text" class="form-control" name="prenom"
+                               th:value="${connectedUser.prenom}" required maxlength="50"/>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label required-mark">Nom</label>
+                        <input type="text" class="form-control" name="nom"
+                               th:value="${connectedUser.nom}" required maxlength="50"/>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label required-mark">
+                            <i class="fa-solid fa-envelope me-1"></i>Email
+                        </label>
+                        <input type="email" class="form-control" name="email"
+                               th:value="${connectedUser.email}" required maxlength="100"/>
+                        <small class="text-muted">Modifier votre email change votre identifiant de connexion</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-body">
+                <h5 class="card-title mb-3"><i class="fa-solid fa-address-card me-2"></i>Coordonnees et photo</h5>
+
+                <div class="row g-3 align-items-start">
+                    <div class="col-md-3 text-center">
+                        <img th:if="${client.photoProfile}"
+                             th:src="@{|/uploads/${client.photoProfile}|}"
+                             alt="Photo profil"
+                             class="preview-img mb-2"/>
+                        <img th:unless="${client.photoProfile}"
+                             src="https://ui-avatars.com/api/?name=User&size=200&background=0d6efd&color=fff"
+                             alt="Photo defaut" class="preview-img mb-2"/>
+                        <input type="file" name="photoProfile" accept="image/*" class="form-control form-control-sm"/>
+                        <small class="text-muted">Optionnel - Max 5 Mo</small>
+                    </div>
+
+                    <div class="col-md-9">
+                        <div class="form-floating mb-3">
+                            <input type="tel" class="form-control" id="telephone" name="telephone"
+                                   th:value="${client.telephone}" placeholder="+216 12 345 678" />
+                            <label for="telephone" class="required-mark">
+                                <i class="fa-solid fa-phone me-1"></i>Telephone
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-3 mb-4">
+            <!-- Permis -->
+            <div class="col-md-6">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body">
+                        <h6 class="card-title mb-3">
+                            <i class="fa-solid fa-id-card me-2"></i>Permis de conduire
+                            <span class="text-danger">*</span>
+                        </h6>
+
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="numeroPermis" name="numeroPermis"
+                                   th:value="${client.permis != null ? client.permis.numero : ''}"
+                                   placeholder="N. permis" maxlength="30"/>
+                            <label for="numeroPermis">N. permis</label>
+                        </div>
+
+                        <div class="row g-2 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label small mb-1">Obtention</label>
+                                <input type="date" class="form-control form-control-sm" name="dateObtentionPermis"
+                                       th:value="${client.permis != null ? client.permis.dateObtention : ''}"/>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small mb-1">Expiration</label>
+                                <input type="date" class="form-control form-control-sm" name="dateExpirationPermis"
+                                       th:value="${client.permis != null ? client.permis.dateExpiration : ''}"/>
+                            </div>
+                        </div>
+
+                        <div class="text-center mb-2">
+                            <img th:if="${client.permis != null and client.permis.photo != null}"
+                                 th:src="@{|/uploads/${client.permis.photo}|}"
+                                 alt="Photo permis" class="preview-img"/>
+                            <div th:unless="${client.permis != null and client.permis.photo != null}"
+                                 class="border rounded p-4 text-center text-muted bg-light">
+                                <i class="fa-regular fa-image fa-2x"></i>
+                                <p class="small mb-0 mt-2">Aucune photo</p>
+                            </div>
+                        </div>
+
+                        <input type="file" name="photoPermis" accept="image/*" class="form-control form-control-sm"/>
+                        <small class="text-muted">Photo recto-verso si possible</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CIN -->
+            <div class="col-md-6">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body">
+                        <h6 class="card-title mb-3">
+                            <i class="fa-solid fa-id-badge me-2"></i>Carte d'identite (CIN)
+                            <span class="text-danger">*</span>
+                        </h6>
+
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="numeroCIN" name="numeroCIN"
+                                   th:value="${client.numeroCIN}" placeholder="N. CIN" maxlength="30"/>
+                            <label for="numeroCIN">N. CIN</label>
+                        </div>
+
+                        <div class="text-center mb-2">
+                            <img th:if="${client.photoCIN}"
+                                 th:src="@{|/uploads/${client.photoCIN}|}"
+                                 alt="Photo CIN" class="preview-img"/>
+                            <div th:unless="${client.photoCIN}"
+                                 class="border rounded p-4 text-center text-muted bg-light">
+                                <i class="fa-regular fa-image fa-2x"></i>
+                                <p class="small mb-0 mt-2">Aucune photo</p>
+                            </div>
+                        </div>
+
+                        <input type="file" name="photoCIN" accept="image/*" class="form-control form-control-sm"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-end">
+            <button type="submit" class="btn btn-primary px-4">
+                <i class="fa-solid fa-floppy-disk me-2"></i>Enregistrer
+            </button>
+        </div>
+    </form>
+
+    <!-- Form changement de mot de passe (separe pour ne pas mixer avec uploads) -->
+    <div class="card border-0 shadow-sm mt-4">
+        <div class="card-body">
+            <h5 class="card-title mb-3"><i class="fa-solid fa-key me-2"></i>Changer mon mot de passe</h5>
+            <form th:action="@{/client/profil/mot-de-passe}" method="post">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label required-mark">Mot de passe actuel</label>
+                        <input type="password" class="form-control" name="ancienMotDePasse" required/>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label required-mark">Nouveau mot de passe</label>
+                        <input type="password" class="form-control" name="nouveauMotDePasse" required minlength="6"/>
+                        <small class="text-muted">Min. 6 caracteres</small>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label required-mark">Confirmation</label>
+                        <input type="password" class="form-control" name="confirmation" required minlength="6"/>
+                    </div>
+                </div>
+                <div class="text-end mt-3">
+                    <button type="submit" class="btn btn-warning">
+                        <i class="fa-solid fa-key me-2"></i>Modifier le mot de passe
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

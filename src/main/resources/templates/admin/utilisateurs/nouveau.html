@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Nouveau client')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<div th:replace="~{fragments/layout :: alerts}"></div>
+
+<main class="container py-4">
+
+    <a th:href="@{/admin/utilisateurs}" class="text-muted text-decoration-none mb-3 d-inline-block">
+        <i class="fa-solid fa-arrow-left me-1"></i> Retour aux utilisateurs
+    </a>
+
+    <h2 class="mb-4"><i class="fa-solid fa-user-plus me-2 text-primary"></i> Ajouter un client</h2>
+
+    <div class="alert alert-info">
+        <i class="fa-solid fa-circle-info me-1"></i>
+        Le compte sera <strong>actif immediatement</strong>. Un mot de passe est genere aleatoirement
+        et envoye au client par email. Il pourra le changer apres connexion.
+    </div>
+
+    <div class="alert alert-danger" th:if="${errorMessage}" th:text="${errorMessage}"></div>
+
+    <form th:action="@{/admin/utilisateurs/nouveau}" th:object="${creerForm}" method="post">
+
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-body">
+                <h6 class="card-title mb-3">Informations obligatoires</h6>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Email <span class="text-danger">*</span></label>
+                        <input type="email" class="form-control" th:field="*{email}"
+                               th:classappend="${#fields.hasErrors('email')} ? 'is-invalid' : ''"
+                               placeholder="client@exemple.com" required/>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('email')}"
+                             th:errors="*{email}"></div>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Prenom <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" th:field="*{prenom}"
+                               th:classappend="${#fields.hasErrors('prenom')} ? 'is-invalid' : ''" required/>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('prenom')}"
+                             th:errors="*{prenom}"></div>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Nom <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" th:field="*{nom}"
+                               th:classappend="${#fields.hasErrors('nom')} ? 'is-invalid' : ''" required/>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('nom')}"
+                             th:errors="*{nom}"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-body">
+                <h6 class="card-title mb-1">Documents (facultatif)</h6>
+                <p class="text-muted small mb-3">
+                    Renseignez-les si le client a apporte ses papiers. Sinon il pourra les ajouter lui-meme
+                    depuis son espace personnel.
+                </p>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Telephone</label>
+                        <input type="text" class="form-control" th:field="*{telephone}"
+                               th:classappend="${#fields.hasErrors('telephone')} ? 'is-invalid' : ''"
+                               placeholder="+216 12 345 678"/>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('telephone')}"
+                             th:errors="*{telephone}"></div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">N. CIN</label>
+                        <input type="text" class="form-control" th:field="*{numeroCIN}"
+                               th:classappend="${#fields.hasErrors('numeroCIN')} ? 'is-invalid' : ''"/>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('numeroCIN')}"
+                             th:errors="*{numeroCIN}"></div>
+                    </div>
+                </div>
+
+                <hr class="my-3"/>
+                <h6 class="mb-2"><i class="fa-solid fa-id-card me-1 text-primary"></i> Permis de conduire</h6>
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label">N. permis</label>
+                        <input type="text" class="form-control" th:field="*{numeroPermis}"
+                               th:classappend="${#fields.hasErrors('numeroPermis')} ? 'is-invalid' : ''"/>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('numeroPermis')}"
+                             th:errors="*{numeroPermis}"></div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Date d'obtention</label>
+                        <input type="date" class="form-control" th:field="*{dateObtentionPermis}"/>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Date d'expiration</label>
+                        <input type="date" class="form-control" th:field="*{dateExpirationPermis}"/>
+                    </div>
+                </div>
+
+                <p class="text-muted small mt-3 mb-0">
+                    <i class="fa-solid fa-camera me-1"></i>
+                    Les photos (profil, permis, CIN) sont ajoutees par le client depuis son espace personnel.
+                </p>
+            </div>
+        </div>
+
+        <div class="d-flex gap-2 justify-content-end">
+            <a th:href="@{/admin/utilisateurs}" class="btn btn-outline-secondary">Annuler</a>
+            <button type="submit" class="btn btn-primary">
+                <i class="fa-solid fa-check me-1"></i>Creer le compte
+            </button>
+        </div>
+    </form>
+
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

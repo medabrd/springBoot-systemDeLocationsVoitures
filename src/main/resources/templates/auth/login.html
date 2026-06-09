@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Connexion')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<div th:replace="~{fragments/layout :: alerts}"></div>
+
+<main class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4 p-md-5">
+                    <h2 class="text-center mb-4">
+                        <i class="fa-solid fa-right-to-bracket text-primary me-2"></i>
+                        Connexion
+                    </h2>
+
+                    <form th:action="@{/auth/login}" method="post">
+                        <div class="form-floating mb-3">
+                            <input type="email" class="form-control" id="email"
+                                   name="email" placeholder="Email" required autofocus />
+                            <label for="email"><i class="fa-solid fa-envelope me-1"></i> Email</label>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input type="password" class="form-control" id="motDePasse"
+                                   name="motDePasse" placeholder="Mot de passe" required />
+                            <label for="motDePasse"><i class="fa-solid fa-lock me-1"></i> Mot de passe</label>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100 py-2 mb-3">
+                            <i class="fa-solid fa-right-to-bracket me-2"></i>Se connecter
+                        </button>
+                    </form>
+
+                    <div class="text-center mb-2">
+                        <a th:href="@{/auth/mot-de-passe-oublie}" class="text-decoration-none small">
+                            <i class="fa-solid fa-key me-1"></i> Mot de passe oublie ?
+                        </a>
+                    </div>
+
+                    <div class="text-center">
+                        <small class="text-muted">Pas encore de compte ?</small>
+                        <a th:href="@{/auth/inscription}" class="ms-1 text-decoration-none">
+                            Inscription <i class="fa-solid fa-arrow-right small"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

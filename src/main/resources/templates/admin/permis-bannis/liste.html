@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Permis bannis')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<div th:replace="~{fragments/layout :: alerts}"></div>
+
+<main class="container py-4">
+
+    <h2 class="mb-4"><i class="fa-solid fa-ban me-2 text-danger"></i> Permis bannis</h2>
+
+    <!-- Formulaire d'ajout -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body">
+            <h6 class="card-title"><i class="fa-solid fa-plus me-1"></i>Bannir un permis</h6>
+            <p class="text-muted small">
+                Bannir un numero de permis empeche toute location avec ce permis, meme depuis un autre compte.
+                Le ban survit a la suppression du compte client.
+            </p>
+            <form th:action="@{/admin/permis-bannis}" th:object="${banForm}" method="post" class="row g-2">
+                <div class="col-md-3">
+                    <input type="text" class="form-control" th:field="*{numeroPermis}"
+                           placeholder="Numero de permis" required maxlength="30"/>
+                </div>
+                <div class="col-md-7">
+                    <input type="text" class="form-control" th:field="*{motif}"
+                           placeholder="Motif (obligatoire)" required maxlength="500"/>
+                </div>
+                <div class="col-md-2 d-grid">
+                    <button type="submit" class="btn btn-danger"
+                            onclick="return confirm('Confirmer le bannissement de ce permis ?')">
+                        <i class="fa-solid fa-ban me-1"></i>Bannir
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Liste -->
+    <div class="card border-0 shadow-sm" th:unless="${bannis.empty}">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                <tr>
+                    <th>Date du ban</th>
+                    <th>Numero permis</th>
+                    <th>Motif</th>
+                    <th>Admin</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="b : ${bannis.content}">
+                    <td>
+                        <small th:text="${#temporals.format(b.dateBan, 'dd/MM/yyyy HH:mm')}"></small>
+                    </td>
+                    <td><code th:text="${b.numero}"></code></td>
+                    <td><span th:text="${b.motifBan}"></span></td>
+                    <td>
+                        <small th:if="${b.adminBannisseur != null}"
+                               th:text="${b.adminBannisseur.prenom + ' ' + b.adminBannisseur.nom}">--</small>
+                        <small th:unless="${b.adminBannisseur != null}" class="text-muted fst-italic">--</small>
+                    </td>
+                    <td class="text-end">
+                        <form th:action="@{/admin/permis-bannis/supprimer}" method="post" class="d-inline"
+                              onsubmit="return confirm('Retirer ce permis de la liste noire ?')">
+                            <input type="hidden" name="numeroPermis" th:value="${b.numero}"/>
+                            <button type="submit" class="btn btn-sm btn-outline-success" title="Debannir">
+                                <i class="fa-solid fa-circle-check"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div th:if="${bannis.empty}" class="alert alert-info text-center">
+        Aucun permis banni pour le moment.
+    </div>
+
+    <div th:replace="~{fragments/pagination :: paginer(${bannis}, ${urlBase})}"></div>
+
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

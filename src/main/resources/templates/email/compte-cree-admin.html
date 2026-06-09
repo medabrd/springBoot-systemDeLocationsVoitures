@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Votre compte a ete cree</title>
+</head>
+<body style="font-family: Arial, sans-serif; background:#f4f4f4; margin:0; padding:20px;">
+    <div style="max-width:600px; margin:auto; background:#fff; padding:30px; border-radius:8px;">
+        <h2 style="color:#0d6efd; margin-top:0;">Bienvenue chez Agence Location Voitures</h2>
+        <p>Bonjour <strong th:text="${prenom + ' ' + nom}">Prenom Nom</strong>,</p>
+        <p>Un compte client a ete cree pour vous par notre equipe a l'accueil. Vous pouvez deja vous connecter avec les identifiants ci-dessous :</p>
+
+        <div style="background:#f8f9fa; border:1px solid #dee2e6; border-radius:6px; padding:20px; margin:20px 0;">
+            <p style="margin:0 0 8px 0;"><strong>Email :</strong> <span th:text="${email}">email@exemple.com</span></p>
+            <p style="margin:0;"><strong>Mot de passe :</strong>
+                <code style="background:#fff; padding:4px 8px; border-radius:4px; font-size:15px; color:#d63384;"
+                      th:text="${motDePasse}">XXXXXXXXXX</code>
+            </p>
+        </div>
+
+        <p style="text-align:center; margin:30px 0;">
+            <a th:href="${lienConnexion}" style="background:#0d6efd; color:#fff; padding:12px 24px; text-decoration:none; border-radius:4px;">
+                Se connecter
+            </a>
+        </p>
+
+        <p style="font-size:13px; color:#444;">
+            <strong>Important :</strong> pour des raisons de securite, nous vous invitons a changer votre mot de passe
+            apres votre premiere connexion depuis votre espace personnel (Mon compte &raquo; Changer mon mot de passe).
+        </p>
+
+        <p style="font-size:12px; color:#666;">Si vous n'attendiez pas la creation d'un compte chez nous, ignorez ce mail ou contactez-nous.</p>
+        <hr style="border:none; border-top:1px solid #eee; margin:30px 0;">
+        <p style="font-size:11px; color:#999; text-align:center;">Agence Location Voitures - Mini-projet Spring Boot</p>
+    </div>
+</body>
+</html>

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><title>Suspension de compte</title></head>
+<body style="font-family: Arial, sans-serif; background:#f4f4f4; margin:0; padding:20px;">
+<div style="max-width:600px; margin:auto; background:#fff; padding:30px; border-radius:8px;">
+    <h2 style="color:#dc3545;">Suspension de votre compte</h2>
+    <p>Bonjour <strong th:text="${prenom + ' ' + nom}"></strong>,</p>
+    <p>Nous vous informons que votre compte a ete suspendu.</p>
+
+    <div style="background:#f8d7da; border-left:4px solid #dc3545; padding:12px 16px; margin:20px 0; border-radius:4px;">
+        <p style="margin:0;"><strong>Motif :</strong></p>
+        <p style="margin:5px 0 0; white-space:pre-wrap;" th:text="${motif}"></p>
+    </div>
+
+    <p>Vous pouvez toujours vous connecter a votre compte mais ne pourrez plus soumettre de demande de location.</p>
+    <p>Pour regulariser votre situation, veuillez vous presenter directement a l'agence avec une piece d'identite.</p>
+    <p>Cordialement,</p>
+    <p>L'equipe Agence Location Voitures</p>
+</div>
+</body></html>

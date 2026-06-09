@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Mes locations')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<div th:replace="~{fragments/layout :: bannerBanni}"></div>
+<div th:replace="~{fragments/layout :: alerts}"></div>
+
+<main class="container py-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fa-solid fa-key me-2 text-primary"></i> Mes locations</h2>
+        <a th:href="@{/catalogue}" class="btn btn-outline-primary">
+            <i class="fa-solid fa-plus me-1"></i> Nouvelle demande
+        </a>
+    </div>
+
+    <div th:if="${locations.empty}" class="alert alert-info text-center">
+        <i class="fa-solid fa-circle-info me-2"></i>
+        Vous n'avez pas encore de location. <a th:href="@{/catalogue}">Parcourir le catalogue</a>
+    </div>
+
+    <div class="card border-0 shadow-sm" th:unless="${locations.empty}">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                <tr>
+                    <th>Reference</th>
+                    <th>Vehicule</th>
+                    <th>Periode</th>
+                    <th>Total</th>
+                    <th>Statut</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="l : ${locations.content}">
+                    <td>
+                        <strong>#<span th:text="${l.id}">0</span></strong>
+                        <br/><small class="text-muted" th:text="${#temporals.format(l.dateCreation, 'dd/MM/yyyy')}"></small>
+                    </td>
+                    <td>
+                        <strong th:text="${l.voiture.marque.nom + ' ' + l.voiture.modele}">--</strong>
+                        <br/><small class="text-muted" th:text="${l.voiture.immatriculation}">--</small>
+                    </td>
+                    <td>
+                        Du <span th:text="${#temporals.format(l.dateDebut, 'dd/MM/yyyy')}"></span><br/>
+                        Au <span th:text="${#temporals.format(l.dateFin, 'dd/MM/yyyy')}"></span>
+                        <br/><small class="text-muted"><span th:text="${l.nombreJours}"></span> jour(s)</small>
+                    </td>
+                    <td><strong th:text="${l.prixTotal} + ' DT'"></strong></td>
+                    <td>
+                        <span class="badge badge-statut" th:classappend="'badge-' + ${l.statut}" th:text="${l.statut}">STATUT</span>
+                    </td>
+                    <td class="text-end">
+                        <a th:href="@{|/client/locations/${l.id}|}" class="btn btn-sm btn-outline-primary">
+                            <i class="fa-solid fa-eye"></i>
+                        </a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/pagination :: paginer(${locations}, ${urlBase})}"></div>
+
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

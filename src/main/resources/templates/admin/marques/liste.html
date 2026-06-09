@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Marques')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<div th:replace="~{fragments/layout :: alerts}"></div>
+
+<main class="container py-4">
+    <h2><i class="fa-solid fa-trademark me-2 text-primary"></i> Marques</h2>
+
+    <div class="row mt-4 g-4">
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <h6 class="card-title">Nouvelle marque</h6>
+                    <form th:action="@{/admin/marques}" method="post" enctype="multipart/form-data">
+                        <div class="mb-2">
+                            <input type="text" name="nom" class="form-control" placeholder="Nom (ex: Renault)" required maxlength="50"/>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label small text-muted mb-1">Logo (optionnel, jpg/png/webp)</label>
+                            <input type="file" name="logo" class="form-control" accept="image/*"/>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fa-solid fa-plus me-1"></i>Ajouter
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="list-group shadow-sm" th:unless="${marques.empty}">
+                <div th:each="m : ${marques}" class="list-group-item">
+                    <form th:action="@{|/admin/marques/${m.id}/modifier|}" method="post" enctype="multipart/form-data" class="row g-2 align-items-center m-0">
+                        <div class="col-md-2 text-center">
+                            <img th:if="${m.logo}" th:src="@{|/uploads/${m.logo}|}"
+                                 style="max-width:60px; max-height:60px; object-fit:contain;"
+                                 th:alt="${m.nom}"/>
+                            <i th:unless="${m.logo}" class="fa-solid fa-image fa-2x text-muted"></i>
+                        </div>
+                        <div class="col-md-4">
+                            <input type="text" name="nom" th:value="${m.nom}" class="form-control form-control-sm" required maxlength="50"/>
+                        </div>
+                        <div class="col-md-4">
+                            <input type="file" name="logo" class="form-control form-control-sm" accept="image/*"/>
+                            <small class="text-muted" th:if="${m.logo}">Choisir un fichier remplace le logo actuel</small>
+                        </div>
+                        <div class="col-md-2 text-end">
+                            <button type="submit" class="btn btn-sm btn-outline-primary" title="Enregistrer">
+                                <i class="fa-solid fa-save"></i>
+                            </button>
+                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Supprimer"
+                                    th:formaction="@{|/admin/marques/${m.id}/supprimer|}"
+                                    formenctype="application/x-www-form-urlencoded"
+                                    onclick="return confirm('Supprimer cette marque ?')">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div th:if="${marques.empty}" class="alert alert-info">Aucune marque enregistree.</div>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

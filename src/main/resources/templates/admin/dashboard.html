@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Tableau de bord')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<div th:replace="~{fragments/layout :: alerts}"></div>
+
+<main class="container py-4">
+
+    <h2 class="mb-4"><i class="fa-solid fa-chart-line me-2 text-primary"></i> Tableau de bord</h2>
+
+    <!-- KPIs Flotte -->
+    <h6 class="text-muted text-uppercase mb-2 small">Flotte</h6>
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="card kpi-card shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <div class="kpi-value text-primary" th:text="${dashboard.nbVoituresTotal}">0</div>
+                            <div class="kpi-label">Total voitures</div>
+                        </div>
+                        <i class="fa-solid fa-car kpi-icon text-primary"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card kpi-card shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <div class="kpi-value text-success" th:text="${dashboard.nbVoituresActives}">0</div>
+                            <div class="kpi-label">Actives</div>
+                        </div>
+                        <i class="fa-solid fa-circle-check kpi-icon text-success"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card kpi-card shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <div class="kpi-value text-warning" th:text="${dashboard.nbVoituresHorsService}">0</div>
+                            <div class="kpi-label">Hors service</div>
+                        </div>
+                        <i class="fa-solid fa-wrench kpi-icon text-warning"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- KPIs Locations -->
+    <h6 class="text-muted text-uppercase mb-2 small">Locations</h6>
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card kpi-card shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <div class="kpi-value text-secondary" th:text="${dashboard.nbDemandesEnAttente}">0</div>
+                            <div class="kpi-label">En attente</div>
+                        </div>
+                        <i class="fa-regular fa-clock kpi-icon text-secondary"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card kpi-card shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <div class="kpi-value text-warning" th:text="${dashboard.nbLocationsPreReservees}">0</div>
+                            <div class="kpi-label">Pre-reservees</div>
+                        </div>
+                        <i class="fa-solid fa-lock kpi-icon text-warning"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card kpi-card shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <div class="kpi-value text-success" th:text="${dashboard.nbLocationsEnCours}">0</div>
+                            <div class="kpi-label">En cours</div>
+                        </div>
+                        <i class="fa-solid fa-key kpi-icon text-success"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card kpi-card shadow-sm bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <div class="kpi-value text-white" th:text="${dashboard.chiffreAffairesTotal}">0</div>
+                            <div class="kpi-label text-white-50">Chiffre d'affaires (DT)</div>
+                        </div>
+                        <i class="fa-solid fa-sack-dollar kpi-icon text-white"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- KPIs Utilisateurs et Qualite -->
+    <h6 class="text-muted text-uppercase mb-2 small">Utilisateurs et qualite</h6>
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card kpi-card shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <div class="kpi-value text-success" th:text="${dashboard.nbClientsActifs}">0</div>
+                            <div class="kpi-label">Clients actifs</div>
+                        </div>
+                        <i class="fa-solid fa-users kpi-icon text-success"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card kpi-card shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <div class="kpi-value text-danger" th:text="${dashboard.nbPermisBannis}">0</div>
+                            <div class="kpi-label">Permis bannis</div>
+                        </div>
+                        <i class="fa-solid fa-ban kpi-icon text-danger"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card kpi-card shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <div class="kpi-value text-warning"
+                                 th:text="${#numbers.formatDecimal(dashboard.noteMoyenne, 1, 1)}">0.0</div>
+                            <div class="kpi-label">Note moyenne</div>
+                        </div>
+                        <i class="fa-solid fa-star kpi-icon text-warning"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card kpi-card shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <div class="kpi-value text-danger" th:text="${dashboard.nbReclamationsEnTraitement}">0</div>
+                            <div class="kpi-label">Reclamations en cours de traitement</div>
+                        </div>
+                        <i class="fa-solid fa-triangle-exclamation kpi-icon text-danger"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top voitures + Repartition par categorie -->
+    <div class="row g-3">
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fa-solid fa-trophy me-2 text-warning"></i>Top 5 des voitures les plus louees</h5>
+                    <div th:if="${dashboard.topVoitures.empty}" class="text-muted small">Pas encore de donnees.</div>
+                    <table class="table table-sm" th:unless="${dashboard.topVoitures.empty}">
+                        <tbody>
+                        <tr th:each="t, it : ${dashboard.topVoitures}">
+                            <td class="text-muted" style="width:30px;" th:text="${it.index + 1}">1</td>
+                            <td>
+                                <strong th:text="${t.marque + ' ' + t.modele}"></strong>
+                            </td>
+                            <td class="text-end">
+                                <span class="badge bg-primary" th:text="${t.nombreLocations} + ' loc'"></span>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fa-solid fa-folder-tree me-2 text-info"></i>Repartition par categorie</h5>
+                    <div th:if="${dashboard.repartitionParCategorie.empty}" class="text-muted small">Pas encore de donnees.</div>
+                    <table class="table table-sm" th:unless="${dashboard.repartitionParCategorie.empty}">
+                        <tbody>
+                        <tr th:each="r : ${dashboard.repartitionParCategorie}">
+                            <td th:text="${r.libelle}"></td>
+                            <td class="text-end">
+                                <span class="badge bg-info" th:text="${r.count}"></span>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

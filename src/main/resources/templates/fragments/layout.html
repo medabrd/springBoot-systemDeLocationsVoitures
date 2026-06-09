@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:fragment="head(titre)">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="_csrf" th:content="${_csrf?.token}" />
+    <meta name="_csrf_header" th:content="${_csrf?.headerName}" />
+    <title th:text="${titre} ?: 'Agence Location Voitures'">Location Voitures</title>
+
+    <!-- Bootstrap 5 -->
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
+    <!-- FontAwesome 6 -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <!-- CSS perso -->
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+</head>
+
+<body>
+
+<!-- ============================================================
+     NAVBAR
+     ============================================================ -->
+<nav th:fragment="navbar"
+     class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm sticky-top">
+    <div class="container">
+        <a class="navbar-brand fw-bold" th:href="@{/}">
+            <i class="fa-solid fa-car-side me-2"></i> LocationVoitures
+        </a>
+        <button class="navbar-toggler" type="button"
+                data-bs-toggle="collapse" data-bs-target="#navbarMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarMenu">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item" sec:authorize="hasRole('CLIENT')">
+                    <a class="nav-link" th:href="@{/catalogue}">
+                        <i class="fa-solid fa-list me-1"></i> Catalogue
+                    </a>
+                </li>
+
+                <!-- Liens CLIENT -->
+                <li class="nav-item" sec:authorize="hasRole('CLIENT')">
+                    <a class="nav-link" th:href="@{/client/locations}">
+                        <i class="fa-solid fa-key me-1"></i> Mes locations
+                    </a>
+                </li>
+                <li class="nav-item" sec:authorize="hasRole('CLIENT')">
+                    <a class="nav-link" th:href="@{/client/profil}">
+                        <i class="fa-solid fa-user me-1"></i> Mon profil
+                    </a>
+                </li>
+
+                <!-- Liens ADMIN (a plat) -->
+                <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                    <a class="nav-link" th:href="@{/admin/dashboard}"><i class="fa-solid fa-chart-line me-1"></i>Dashboard</a>
+                </li>
+                <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                    <a class="nav-link" th:href="@{/admin/voitures}"><i class="fa-solid fa-car me-1"></i>Flotte</a>
+                </li>
+                <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                    <a class="nav-link" th:href="@{/admin/marques}"><i class="fa-solid fa-trademark me-1"></i>Marques</a>
+                </li>
+                <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                    <a class="nav-link" th:href="@{/admin/categories}"><i class="fa-solid fa-folder me-1"></i>Categories</a>
+                </li>
+                <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                    <a class="nav-link" th:href="@{/admin/equipements}"><i class="fa-solid fa-screwdriver-wrench me-1"></i>Equipements</a>
+                </li>
+                <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                    <a class="nav-link" th:href="@{/admin/locations}"><i class="fa-solid fa-clipboard-list me-1"></i>Locations</a>
+                </li>
+                <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                    <a class="nav-link" th:href="@{/admin/utilisateurs}"><i class="fa-solid fa-users me-1"></i>Utilisateurs</a>
+                </li>
+                <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                    <a class="nav-link" th:href="@{/admin/permis-bannis}"><i class="fa-solid fa-ban me-1"></i>Permis bannis</a>
+                </li>
+                <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                    <a class="nav-link" th:href="@{/admin/reclamations}"><i class="fa-solid fa-triangle-exclamation me-1"></i>Reclamations</a>
+                </li>
+                <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                    <a class="nav-link" th:href="@{/admin/avis}"><i class="fa-solid fa-star me-1"></i>Avis</a>
+                </li>
+            </ul>
+
+            <ul class="navbar-nav ms-auto">
+                <!-- Visiteur non connecte -->
+                <li class="nav-item" sec:authorize="!isAuthenticated()">
+                    <a class="nav-link" th:href="@{/auth/login}">
+                        <i class="fa-solid fa-right-to-bracket me-1"></i> Connexion
+                    </a>
+                </li>
+                <li class="nav-item" sec:authorize="!isAuthenticated()">
+                    <a class="btn btn-light btn-sm ms-2" th:href="@{/auth/inscription}">
+                        <i class="fa-solid fa-user-plus me-1"></i> Inscription
+                    </a>
+                </li>
+
+                <!-- Connecte -->
+                <li class="nav-item dropdown" sec:authorize="isAuthenticated()">
+                    <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#">
+                        <i class="fa-solid fa-circle-user me-1"></i>
+                        <span th:text="${connectedUser?.prenom} + ' ' + ${connectedUser?.nom}">Compte</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li class="dropdown-item-text small text-muted" th:text="${connectedUser?.email}"></li>
+                        <li><hr class="dropdown-divider"/></li>
+                        <li>
+                            <form th:action="@{/auth/logout}" method="post" class="d-inline">
+                                <button type="submit" class="dropdown-item text-danger">
+                                    <i class="fa-solid fa-right-from-bracket me-2"></i>Deconnexion
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- ============================================================
+     BANDEAU CLIENT BANNI
+     ============================================================ -->
+<div th:fragment="bannerBanni"
+     th:if="${clientBanni}"
+     class="alert alert-danger rounded-0 border-0 mb-0">
+    <div class="container d-flex align-items-center">
+        <i class="fa-solid fa-ban fa-2x me-3"></i>
+        <div>
+            <strong>Compte suspendu.</strong>
+            <span>Vous ne pouvez plus soumettre de demande de location.</span>
+            <span th:if="${motifBan}">
+                Motif : <em th:text="${motifBan}"></em>.
+            </span>
+            Veuillez vous presenter a l'agence pour regulariser votre situation.
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================
+     ALERTES FLASH (success / error)
+     ============================================================ -->
+<div th:fragment="alerts" class="container mt-3">
+    <div th:if="${successMessage}"
+         class="alert alert-success alert-dismissible fade show shadow-sm">
+        <i class="fa-solid fa-circle-check me-2"></i>
+        <span th:text="${successMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <div th:if="${errorMessage}"
+         class="alert alert-danger alert-dismissible fade show shadow-sm">
+        <i class="fa-solid fa-circle-exclamation me-2"></i>
+        <span th:text="${errorMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <div th:if="${infoMessage}"
+         class="alert alert-info alert-dismissible fade show shadow-sm">
+        <i class="fa-solid fa-circle-info me-2"></i>
+        <span th:text="${infoMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+</div>
+
+<!-- ============================================================
+     FOOTER
+     ============================================================ -->
+<footer th:fragment="footer" class="bg-dark text-white-50 py-4 mt-5">
+    <div class="container text-center">
+        <p class="mb-1">
+            <i class="fa-solid fa-car-side me-2"></i>
+            <strong>Agence Location Voitures</strong>
+        </p>
+        <p class="small mb-0">
+            Agence Locatino de voiture
+        </p>
+    </div>
+</footer>
+
+<!-- ============================================================
+     SCRIPTS
+     ============================================================ -->
+<th:block th:fragment="scripts">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</th:block>
+
+</body>
+</html>

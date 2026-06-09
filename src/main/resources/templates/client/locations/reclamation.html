@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Deposer une reclamation')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<div th:replace="~{fragments/layout :: bannerBanni}"></div>
+<div th:replace="~{fragments/layout :: alerts}"></div>
+
+<main class="container py-4">
+
+    <a th:href="@{|/client/locations/${location.id}|}" class="text-muted text-decoration-none mb-3 d-inline-block">
+        <i class="fa-solid fa-arrow-left me-1"></i> Retour
+    </a>
+
+    <h2><i class="fa-solid fa-triangle-exclamation me-2 text-warning"></i> Deposer une reclamation</h2>
+    <p class="text-muted">
+        Location #<span th:text="${location.id}"></span> -
+        <span th:text="${location.voiture.marque.nom + ' ' + location.voiture.modele}"></span>
+    </p>
+
+    <div class="card border-0 shadow-sm mt-3">
+        <div class="card-body">
+            <form th:action="@{|/client/locations/${location.id}/reclamation|}"
+                  th:object="${reclamationForm}" method="post" enctype="multipart/form-data" novalidate>
+
+                <div class="mb-3">
+                    <label class="form-label required-mark fw-bold">Categorie</label>
+                    <select class="form-select" th:field="*{categorie}"
+                            th:classappend="${#fields.hasErrors('categorie')} ? 'is-invalid'">
+                        <option value="">-- Choisir une categorie --</option>
+                        <option th:each="c : ${categories}" th:value="${c}" th:text="${c}">CATEG</option>
+                    </select>
+                    <div class="invalid-feedback" th:errors="*{categorie}"></div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label required-mark fw-bold">Description du probleme</label>
+                    <textarea class="form-control" rows="6"
+                              th:field="*{description}"
+                              th:classappend="${#fields.hasErrors('description')} ? 'is-invalid'"
+                              placeholder="Decrivez precisement le probleme..." maxlength="1000"></textarea>
+                    <div class="invalid-feedback" th:errors="*{description}"></div>
+                    <small class="text-muted">Max 1000 caracteres</small>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Photo (optionnelle)</label>
+                    <input type="file" name="photo" accept="image/*" class="form-control"/>
+                    <small class="text-muted">Si vous pouvez illustrer le probleme avec une photo, ajoutez-la ici. Max 5 Mo.</small>
+                </div>
+
+                <div class="alert alert-info small">
+                    <i class="fa-solid fa-circle-info me-2"></i>
+                    Votre reclamation sera transmise a notre equipe qui vous repondra par email et sur cette page.
+                </div>
+
+                <div class="text-end">
+                    <a th:href="@{|/client/locations/${location.id}|}" class="btn btn-outline-secondary me-2">Annuler</a>
+                    <button type="submit" class="btn btn-warning">
+                        <i class="fa-solid fa-flag me-2"></i>Soumettre la reclamation
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

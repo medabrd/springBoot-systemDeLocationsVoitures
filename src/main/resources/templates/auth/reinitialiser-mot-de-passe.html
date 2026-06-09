@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Reinitialiser le mot de passe')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<div th:replace="~{fragments/layout :: alerts}"></div>
+
+<main class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4 p-md-5">
+                    <h2 class="text-center mb-3">
+                        <i class="fa-solid fa-lock-open text-primary me-2"></i>
+                        Nouveau mot de passe
+                    </h2>
+                    <p class="text-muted text-center small mb-4">
+                        Choisissez un nouveau mot de passe (6 caracteres minimum).
+                    </p>
+
+                    <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+
+                    <form th:action="@{/auth/reinitialiser-mot-de-passe}" th:object="${reinitialisationForm}" method="post" novalidate>
+                        <input type="hidden" th:field="*{token}"/>
+
+                        <div class="form-floating mb-3">
+                            <input type="password" class="form-control" id="motDePasse" th:field="*{motDePasse}"
+                                   th:classappend="${#fields.hasErrors('motDePasse')} ? 'is-invalid'"
+                                   placeholder="Mot de passe" required autofocus minlength="6" />
+                            <label for="motDePasse"><i class="fa-solid fa-lock me-1"></i> Nouveau mot de passe</label>
+                            <div class="invalid-feedback" th:errors="*{motDePasse}"></div>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input type="password" class="form-control" id="confirmationMotDePasse"
+                                   th:field="*{confirmationMotDePasse}"
+                                   th:classappend="${#fields.hasErrors('confirmationMotDePasse')} ? 'is-invalid'"
+                                   placeholder="Confirmation" required minlength="6" />
+                            <label for="confirmationMotDePasse"><i class="fa-solid fa-lock me-1"></i> Confirmer</label>
+                            <div class="invalid-feedback" th:errors="*{confirmationMotDePasse}"></div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100 py-2 mb-3">
+                            <i class="fa-solid fa-check me-2"></i>Valider le nouveau mot de passe
+                        </button>
+                    </form>
+
+                    <div class="text-center">
+                        <a th:href="@{/auth/login}" class="text-decoration-none small">
+                            <i class="fa-solid fa-arrow-left me-1"></i> Retour a la connexion
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><title>Demande acceptee</title></head>
+<body style="font-family: Arial, sans-serif; background:#f4f4f4; margin:0; padding:20px;">
+<div style="max-width:600px; margin:auto; background:#fff; padding:30px; border-radius:8px;">
+    <h2 style="color:#198754;">Votre demande de location a ete acceptee</h2>
+    <p>Bonjour <strong th:text="${prenom + ' ' + nom}"></strong>,</p>
+    <p>Bonne nouvelle ! Votre demande de location a ete acceptee. Vous trouverez en piece jointe la facture detaillee.</p>
+
+    <div style="background:#f8f9fa; padding:15px; border-radius:6px; margin:20px 0;">
+        <p style="margin:5px 0;"><strong>Vehicule :</strong> <span th:text="${voiture}"></span></p>
+        <p style="margin:5px 0;"><strong>Immatriculation :</strong> <span th:text="${immatriculation}"></span></p>
+        <p style="margin:5px 0;"><strong>Du :</strong> <span th:text="${dateDebut}"></span></p>
+        <p style="margin:5px 0;"><strong>Au :</strong> <span th:text="${dateFin}"></span></p>
+        <p style="margin:5px 0;"><strong>Duree :</strong> <span th:text="${nombreJours}"></span> jour(s)</p>
+        <p style="margin:5px 0; font-size:1.1em;"><strong>Total a payer :</strong> <span th:text="${prixTotal}"></span> DT</p>
+    </div>
+
+    <div style="background:#fff3cd; border-left:4px solid #ffc107; padding:12px 16px; margin:20px 0; border-radius:4px;">
+        <p style="margin:0;"><strong>Important :</strong> vous devez vous presenter au bureau de l'agence et regler le montant en especes <strong>avant le <span th:text="${dateExpiration}"></span></strong>. Passe ce delai, votre pre-reservation sera automatiquement annulee.</p>
+    </div>
+
+    <p>A bientot,</p>
+    <p>L'equipe Agence Location Voitures</p>
+</div>
+</body></html>

@@ -1,0 +1,224 @@
+@startuml DiagrammeClasses
+title Diagramme de Classes - Application de Location de Voitures
+
+skinparam classAttributeIconSize 0
+skinparam classFontStyle bold
+skinparam linetype ortho
+skinparam packageStyle rectangle
+
+' ============================================================
+' ENUMERATIONS
+' ============================================================
+enum StatutLocation {
+  EN_ATTENTE
+  ACCEPTEE
+  REFUSEE
+  PAYEE
+  EN_COURS
+  TERMINEE
+  EXPIREE
+}
+
+enum StatutVoiture {
+  ACTIVE
+  HORS_SERVICE
+}
+
+enum Transmission {
+  MANUELLE
+  AUTOMATIQUE
+}
+
+enum Carburant {
+  ESSENCE
+  DIESEL
+  HYBRIDE
+  ELECTRIQUE
+}
+
+enum CategorieReclamation {
+  PANNE
+  ACCIDENT
+  PROPRETE
+  EQUIPEMENT
+  AUTRE
+}
+
+enum StatutReclamation {
+  EN_TRAITEMENT
+  CLOTUREE
+}
+
+enum PosteAdmin {
+  DIRECTION
+  ACCUEIL
+  GESTIONNAIRE_FLOTTE
+  COMPTABILITE
+}
+
+' ============================================================
+' HIERARCHIE UTILISATEUR (JPA @Inheritance JOINED)
+' ============================================================
+
+abstract class Utilisateur {
+  - id : Long
+  - email : String <<unique>>
+  - motDePasse : String
+  - nom : String
+  - prenom : String
+  - actif : boolean
+  - tokenActivation : String
+  - tokenReinitialisation : String
+  - dateExpirationToken : LocalDateTime
+  - dateInscription : LocalDateTime
+}
+
+class Client {
+  - telephone : String
+  - photoProfile : String
+  - numeroCIN : String <<unique>>
+  - photoCIN : String
+}
+
+class Admin {
+  - posteOccupe : PosteAdmin
+  - dateEmbauche : LocalDate
+}
+
+' ============================================================
+' AUTRES ENTITES
+' ============================================================
+
+class Permis {
+  - id : Long
+  - numero : String <<unique>>
+  - dateObtention : LocalDate
+  - dateExpiration : LocalDate
+  - photo : String
+  --
+  - banni : boolean
+  - motifBan : String
+  - dateBan : LocalDateTime
+}
+
+class Marque {
+  - id : Long
+  - nom : String <<unique>>
+  - logo : String
+}
+
+class Categorie {
+  - id : Long
+  - nom : String <<unique>>
+  - description : String
+}
+
+class Voiture {
+  - id : Long
+  - modele : String
+  - annee : int
+  - couleur : String
+  - immatriculation : String <<unique>>
+  - tarifJournalier : BigDecimal
+  - photo : String
+  - description : String
+  - statutGeneral : StatutVoiture
+}
+
+class DetailsVoiture {
+  - id : Long
+  - transmission : Transmission
+  - typeCarburant : Carburant
+  - consommation : double
+  - puissance : int
+  - nombrePlaces : int
+  - nombrePortes : int
+  - volumeCoffre : int
+}
+
+class Equipement {
+  - id : Long
+  - nom : String <<unique>>
+  - description : String
+}
+
+class Location {
+  - id : Long
+  - dateDebut : LocalDate
+  - dateFin : LocalDate
+  - nombreJours : int
+  - prixTotal : BigDecimal
+  - statut : StatutLocation
+  - motifRefus : String
+  - dateExpiration : LocalDateTime
+  - datePaiement : LocalDateTime
+  - dateCreation : LocalDateTime
+  - avisRappelEnvoye : boolean
+}
+
+class ConducteurSecondaire {
+  - id : Long
+  - nom : String
+  - prenom : String
+  - numeroCIN : String
+  - photoCIN : String
+}
+
+class Avis {
+  - id : Long
+  - note : int
+  - commentaire : String
+  - dateCreation : LocalDateTime
+}
+
+class Reclamation {
+  - id : Long
+  - categorie : CategorieReclamation
+  - description : String
+  - photo : String
+  - statut : StatutReclamation
+  - reponseAdmin : String
+  - dateCreation : LocalDateTime
+  - dateReponse : LocalDateTime
+}
+
+' ============================================================
+' HERITAGE (JPA @Inheritance(strategy = JOINED))
+' ============================================================
+Utilisateur <|-- Client
+Utilisateur <|-- Admin
+
+' ============================================================
+' ASSOCIATIONS
+' ============================================================
+
+' --- OneToOne ---
+Client "0..1" -- "0..1" Permis : possede >
+Voiture "1" -- "1" DetailsVoiture : decrite par >
+Location "1" -- "0..1" Avis : recoit >
+Location "1" -- "0..1" ConducteurSecondaire : autorise >
+
+' --- OneToMany / ManyToOne ---
+' FK Location.client_id et Location.voiture_id sont nullables
+' (decouplage : suppression d'un Client ou d'une Voiture preserve l'historique)
+Marque "1" --> "0..*" Voiture : possede
+Categorie "1" --> "0..*" Voiture : classifie
+Client "0..1" --> "0..*" Location : effectue
+Voiture "0..1" --> "0..*" Location : objet de
+Location "0..1" --> "0..*" Reclamation : genere
+Permis "1" --> "0..*" ConducteurSecondaire : utilise par
+Admin "0..1" --> "0..*" Permis : a banni
+
+' --- ManyToMany (bidirectionnelle) ---
+Voiture "0..*" -- "0..*" Equipement : equipee de
+
+' --- Liens enums (typage des attributs) ---
+Admin ..> PosteAdmin
+Voiture ..> StatutVoiture
+Location ..> StatutLocation
+DetailsVoiture ..> Transmission
+DetailsVoiture ..> Carburant
+Reclamation ..> CategorieReclamation
+Reclamation ..> StatutReclamation
+
+@enduml

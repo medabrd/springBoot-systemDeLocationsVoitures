@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Detail voiture')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<div th:replace="~{fragments/layout :: alerts}"></div>
+
+<main class="container py-4">
+
+    <a th:href="@{/admin/voitures}" class="text-muted text-decoration-none mb-3 d-inline-block">
+        <i class="fa-solid fa-arrow-left me-1"></i> Retour a la flotte
+    </a>
+
+    <div class="d-flex justify-content-between align-items-start flex-wrap mb-3">
+        <h2>
+            <span th:text="${voiture.marque.nom}">Marque</span>
+            <span th:text="${voiture.modele}">Modele</span>
+        </h2>
+        <div>
+            <a th:href="@{|/admin/voitures/${voiture.id}/modifier|}" class="btn btn-primary">
+                <i class="fa-solid fa-pen me-2"></i>Modifier
+            </a>
+            <form th:action="@{|/admin/voitures/${voiture.id}/supprimer|}" method="post" class="d-inline ms-2"
+                  onsubmit="return confirm('Supprimer cette voiture ? Cette action est irreversible.')">
+                <button type="submit" class="btn btn-outline-danger">
+                    <i class="fa-solid fa-trash me-2"></i>Supprimer
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="row g-4">
+
+        <!-- Photo + identification -->
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm">
+                <img th:if="${voiture.photo}"
+                     th:src="@{|/uploads/${voiture.photo}|}"
+                     class="card-img-top" style="height: 350px; object-fit: cover;"/>
+                <div th:unless="${voiture.photo}" class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 350px;">
+                    <i class="fa-solid fa-car fa-5x text-muted"></i>
+                </div>
+                <div class="card-body">
+                    <p class="mb-2">
+                        <span class="badge badge-statut"
+                              th:classappend="${voiture.statutGeneral.name() == 'ACTIVE'} ? 'bg-success' : 'bg-warning text-dark'"
+                              th:text="${voiture.statutGeneral}">STATUT</span>
+                        <span class="badge bg-secondary" th:text="${voiture.annee}">2024</span>
+                        <span class="badge bg-light text-dark border" th:text="${voiture.categorie.nom}">Categorie</span>
+                        <span class="badge bg-light text-dark border" th:text="${voiture.couleur}">Couleur</span>
+                    </p>
+                    <p class="mb-1 small text-muted">Immatriculation</p>
+                    <p class="mb-3"><code th:text="${voiture.immatriculation}">XX-XXX-XX</code></p>
+                    <p class="mb-1 small text-muted">Tarif journalier</p>
+                    <p class="mb-0">
+                        <span class="fs-3 fw-bold text-primary" th:text="${voiture.tarifJournalier}">0</span>
+                        <span class="text-muted">DT/jour</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Description + caracteristiques -->
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title mb-3"><i class="fa-solid fa-gauge me-2 text-primary"></i>Caracteristiques techniques</h5>
+                    <p class="text-muted small mb-3" th:if="${voiture.description}" th:text="${voiture.description}">Description...</p>
+                    <p class="text-muted small mb-3" th:unless="${voiture.description}">Aucune description.</p>
+
+                    <div th:if="${voiture.details}">
+                        <ul class="list-unstyled mb-0">
+                            <li class="mb-2"><i class="fa-solid fa-gears me-2 text-muted"></i> Transmission : <strong th:text="${voiture.details.transmission}"></strong></li>
+                            <li class="mb-2"><i class="fa-solid fa-gas-pump me-2 text-muted"></i> Carburant : <strong th:text="${voiture.details.typeCarburant}"></strong></li>
+                            <li class="mb-2"><i class="fa-solid fa-droplet me-2 text-muted"></i> Consommation : <strong th:text="${voiture.details.consommation} + ' L/100km'"></strong></li>
+                            <li class="mb-2"><i class="fa-solid fa-bolt me-2 text-muted"></i> Puissance : <strong th:text="${voiture.details.puissance} + ' ch'"></strong></li>
+                            <li class="mb-2"><i class="fa-solid fa-users me-2 text-muted"></i> Places : <strong th:text="${voiture.details.nombrePlaces}"></strong></li>
+                            <li class="mb-2"><i class="fa-solid fa-door-open me-2 text-muted"></i> Portes : <strong th:text="${voiture.details.nombrePortes}"></strong></li>
+                            <li><i class="fa-solid fa-suitcase me-2 text-muted"></i> Coffre : <strong th:text="${voiture.details.volumeCoffre} + ' L'"></strong></li>
+                        </ul>
+                    </div>
+                    <p th:unless="${voiture.details}" class="text-muted small">Caracteristiques techniques non renseignees.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Equipements -->
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title mb-3"><i class="fa-solid fa-circle-check me-2 text-success"></i>Equipements</h5>
+                    <div th:if="${voiture.equipements.empty}" class="text-muted small">Aucun equipement renseigne.</div>
+                    <div th:unless="${voiture.equipements.empty}">
+                        <span th:each="e : ${voiture.equipements}" class="badge badge-equipement m-1"
+                              th:title="${e.description}" th:text="${e.nom}">Equip</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

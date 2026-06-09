@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><title>Demande refusee</title></head>
+<body style="font-family: Arial, sans-serif; background:#f4f4f4; margin:0; padding:20px;">
+<div style="max-width:600px; margin:auto; background:#fff; padding:30px; border-radius:8px;">
+    <h2 style="color:#dc3545;">Demande de location refusee</h2>
+    <p>Bonjour <strong th:text="${prenom + ' ' + nom}"></strong>,</p>
+    <p>Nous regrettons de vous informer que votre demande de location pour le vehicule <strong th:text="${voiture}"></strong> du <span th:text="${dateDebut}"></span> au <span th:text="${dateFin}"></span> n'a pas pu etre acceptee.</p>
+
+    <div style="background:#f8d7da; border-left:4px solid #dc3545; padding:12px 16px; margin:20px 0; border-radius:4px;">
+        <p style="margin:0;"><strong>Motif :</strong></p>
+        <p style="margin:5px 0 0; white-space:pre-wrap;" th:text="${motif}"></p>
+    </div>
+
+    <p>N'hesitez pas a parcourir notre catalogue pour trouver un autre vehicule.</p>
+    <p>Cordialement,</p>
+    <p>L'equipe Agence Location Voitures</p>
+</div>
+</body></html>

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Detail location')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<div th:replace="~{fragments/layout :: bannerBanni}"></div>
+<div th:replace="~{fragments/layout :: alerts}"></div>
+
+<main class="container py-4">
+
+    <a th:href="@{/client/locations}" class="text-muted text-decoration-none mb-3 d-inline-block">
+        <i class="fa-solid fa-arrow-left me-1"></i> Retour aux locations
+    </a>
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Location #<span th:text="${location.id}">0</span></h2>
+        <span class="badge badge-statut fs-6"
+              th:classappend="'badge-' + ${location.statut}"
+              th:text="${location.statut}">STATUT</span>
+    </div>
+
+    <!-- Voiture -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body">
+            <h5 class="card-title"><i class="fa-solid fa-car me-2 text-primary"></i>Vehicule</h5>
+            <div class="row align-items-center">
+                <div class="col-md-3">
+                    <img th:if="${location.voiture.photo}"
+                         th:src="@{|/uploads/${location.voiture.photo}|}"
+                         class="img-fluid rounded" style="max-height:120px;"/>
+                </div>
+                <div class="col-md-9">
+                    <h5 class="mb-1" th:text="${location.voiture.marque.nom + ' ' + location.voiture.modele}">--</h5>
+                    <p class="text-muted mb-0">
+                        <span th:text="${location.voiture.couleur}"></span> &middot;
+                        <span th:text="${location.voiture.annee}"></span> &middot;
+                        <span th:text="${location.voiture.immatriculation}"></span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Periode et tarif -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <small class="text-muted">Du</small>
+                    <h5 th:text="${#temporals.format(location.dateDebut, 'dd/MM/yyyy')}"></h5>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <small class="text-muted">Au</small>
+                    <h5 th:text="${#temporals.format(location.dateFin, 'dd/MM/yyyy')}"></h5>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <small class="text-muted">Total</small>
+                    <h5 class="text-primary">
+                        <span th:text="${location.prixTotal}">0</span> DT
+                        <small class="text-muted fs-6">
+                            (<span th:text="${location.nombreJours}"></span> j)
+                        </small>
+                    </h5>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statut info -->
+    <div class="alert alert-warning" th:if="${location.statut.name() == 'ACCEPTEE'}">
+        <i class="fa-solid fa-clock me-2"></i>
+        <strong>En attente de paiement.</strong> Veuillez vous presenter au bureau avant le
+        <strong th:text="${#temporals.format(location.dateExpiration, 'dd/MM/yyyy HH:mm')}"></strong>
+        pour regler en especes.
+    </div>
+    <div class="alert alert-danger" th:if="${location.statut.name() == 'REFUSEE'}">
+        <i class="fa-solid fa-circle-xmark me-2"></i>
+        <strong>Demande refusee.</strong> Motif : <em th:text="${location.motifRefus}"></em>
+    </div>
+    <div class="alert alert-secondary" th:if="${location.statut.name() == 'EXPIREE'}">
+        <i class="fa-solid fa-hourglass-end me-2"></i>
+        Pre-reservation expiree (paiement non effectue dans les delais).
+    </div>
+
+    <!-- Second conducteur -->
+    <div class="card border-0 shadow-sm mb-4" th:if="${location.conducteurSecondaire}">
+        <div class="card-body">
+            <h5 class="card-title"><i class="fa-solid fa-user-plus me-2 text-primary"></i>Second conducteur</h5>
+            <p class="mb-0">
+                <strong th:text="${location.conducteurSecondaire.prenom + ' ' + location.conducteurSecondaire.nom}"></strong>
+                &middot; Permis : <span th:text="${location.conducteurSecondaire.permis.numero}"></span>
+                &middot; CIN : <span th:text="${location.conducteurSecondaire.numeroCIN}"></span>
+            </p>
+        </div>
+    </div>
+
+    <!-- Avis (si TERMINEE) -->
+    <div class="card border-0 shadow-sm mb-4" th:if="${location.statut.name() == 'TERMINEE'}">
+        <div class="card-body">
+            <h5 class="card-title"><i class="fa-solid fa-star me-2 text-warning"></i>Votre avis</h5>
+            <div th:if="${location.avis}">
+                <div class="star-rating mb-2">
+                    <i th:each="i : ${#numbers.sequence(1, 5)}"
+                       class="fa-solid fa-star"
+                       th:classappend="${i > location.avis.note} ? 'empty'"></i>
+                </div>
+                <p class="mb-0" th:text="${location.avis.commentaire}"></p>
+                <small class="text-muted" th:text="'Depose le ' + ${#temporals.format(location.avis.dateCreation, 'dd/MM/yyyy')}"></small>
+            </div>
+            <div th:unless="${location.avis}">
+                <p class="text-muted mb-2">Vous n'avez pas encore depose d'avis pour cette location.</p>
+                <a th:href="@{|/client/locations/${location.id}/avis|}" class="btn btn-warning">
+                    <i class="fa-solid fa-star me-2"></i>Donner mon avis
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reclamation (uniquement EN_COURS : cles remises) -->
+    <div class="card border-0 shadow-sm mb-4"
+         th:if="${location.statut.name() == 'EN_COURS'}">
+        <div class="card-body">
+            <h5 class="card-title"><i class="fa-solid fa-triangle-exclamation me-2 text-warning"></i>Une reclamation ?</h5>
+            <p class="text-muted small mb-2">
+                Vous rencontrez un probleme avec votre location ? Deposez une reclamation, notre equipe la traitera rapidement.
+            </p>
+            <a th:href="@{|/client/locations/${location.id}/reclamation|}" class="btn btn-outline-warning">
+                <i class="fa-solid fa-flag me-2"></i>Deposer une reclamation
+            </a>
+        </div>
+    </div>
+
+    <!-- Reclamations existantes -->
+    <div class="card border-0 shadow-sm mb-4" th:unless="${location.reclamations.empty}">
+        <div class="card-body">
+            <h5 class="card-title"><i class="fa-solid fa-list-ul me-2"></i>Reclamations</h5>
+            <div th:each="r : ${location.reclamations}" class="border rounded p-3 mb-2">
+                <div class="d-flex justify-content-between mb-1">
+                    <strong th:text="${r.categorie}">CATEG</strong>
+                    <span class="badge badge-statut" th:classappend="'badge-' + ${r.statut}" th:text="${r.statut}">STATUT</span>
+                </div>
+                <p class="mb-1" th:text="${r.description}"></p>
+                <small class="text-muted" th:text="'Depose le ' + ${#temporals.format(r.dateCreation, 'dd/MM/yyyy HH:mm')}"></small>
+                <div th:if="${r.reponseAdmin}" class="mt-2 p-2 bg-success bg-opacity-10 border-start border-success border-3 rounded">
+                    <small class="text-success fw-bold">Reponse de l'agence :</small>
+                    <p class="mb-0" th:text="${r.reponseAdmin}"></p>
+                    <small class="text-muted" th:text="${#temporals.format(r.dateReponse, 'dd/MM/yyyy HH:mm')}"></small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

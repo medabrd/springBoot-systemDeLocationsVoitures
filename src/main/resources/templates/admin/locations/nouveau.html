@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Nouvelle location')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<div th:replace="~{fragments/layout :: alerts}"></div>
+
+<main class="container py-4">
+
+    <a th:href="@{/admin/locations}" class="text-muted text-decoration-none mb-3 d-inline-block">
+        <i class="fa-solid fa-arrow-left me-1"></i> Retour aux locations
+    </a>
+
+    <h2><i class="fa-solid fa-plus me-2 text-primary"></i> Nouvelle location</h2>
+
+    <!-- ============================================================
+         Etape 1 : choix de la periode
+         ============================================================ -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body">
+            <h5 class="card-title">
+                <span class="badge bg-primary me-2">1</span>Periode de location
+            </h5>
+            <form th:action="@{/admin/locations/nouveau}" method="get" class="row g-2 align-items-end">
+                <div class="col-md-4">
+                    <label class="form-label small">Date debut</label>
+                    <input type="date" name="dateDebut" id="dateDebut" class="form-control"
+                           th:value="${dateDebut}"
+                           th:min="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}"
+                           required/>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label small">Date fin</label>
+                    <input type="date" name="dateFin" id="dateFin" class="form-control"
+                           th:value="${dateFin}"
+                           th:min="${#temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}"
+                           required/>
+                </div>
+                <div class="col-md-4">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fa-solid fa-search me-1"></i>Voir voitures disponibles
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ============================================================
+         Etape 2 : selection client + voiture + statut + creation
+         (visible uniquement si dates valides en query)
+         ============================================================ -->
+    <div th:if="${voituresDisponibles != null}">
+
+        <form th:action="@{/admin/locations}" method="post">
+            <input type="hidden" name="dateDebut" th:value="${dateDebut}"/>
+            <input type="hidden" name="dateFin" th:value="${dateFin}"/>
+
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <span class="badge bg-primary me-2">2</span>Client
+                    </h5>
+                    <select name="clientId" class="form-select" required>
+                        <option value="">-- Selectionner un client --</option>
+                        <option th:each="c : ${clients}" th:value="${c.id}"
+                                th:text="${c.prenom + ' ' + c.nom + ' (' + c.email + ')'}"></option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <span class="badge bg-primary me-2">3</span>Voiture disponible
+                    </h5>
+                    <div th:if="${voituresDisponibles.empty}" class="alert alert-warning mb-0">
+                        <i class="fa-solid fa-circle-exclamation me-2"></i>
+                        Aucune voiture disponible pour cette periode.
+                    </div>
+                    <div th:unless="${voituresDisponibles.empty}" class="row g-3">
+                        <div th:each="v : ${voituresDisponibles}" class="col-md-4">
+                            <label class="card border voiture-card h-100" style="cursor:pointer;">
+                                <input type="radio" name="voitureId" th:value="${v.id}"
+                                       th:attr="data-tarif=${v.tarifJournalier}"
+                                       required class="d-none voiture-radio"/>
+                                <img th:if="${v.photo}" th:src="@{|/uploads/${v.photo}|}"
+                                     class="card-img-top" style="height:140px; object-fit:cover;"/>
+                                <div th:unless="${v.photo}" class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height:140px;">
+                                    <i class="fa-solid fa-car fa-3x text-muted"></i>
+                                </div>
+                                <div class="card-body p-2">
+                                    <strong th:text="${v.marque.nom + ' ' + v.modele}"></strong>
+                                    <div class="small text-muted" th:text="${v.immatriculation}"></div>
+                                    <div class="text-primary fw-bold">
+                                        <span th:text="${v.tarifJournalier}"></span> DT/jour
+                                    </div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm mb-4" th:unless="${voituresDisponibles.empty}">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <span class="badge bg-primary me-2">4</span>Statut initial
+                    </h5>
+                    <p class="text-muted small mb-2" th:if="${statutsAutorises.size() > 1}">
+                        <i class="fa-solid fa-circle-info me-1"></i>
+                        Location dans le futur : choisir <strong>ACCEPTEE</strong> (pre-reservation, 48h pour payer)
+                        ou <strong>PAYEE</strong> (client paie d'avance, cles remises a la date de debut).
+                    </p>
+                    <p class="text-muted small mb-2" th:unless="${statutsAutorises.size() > 1}">
+                        <i class="fa-solid fa-circle-info me-1"></i>
+                        La location commence aujourd'hui : statut force a <strong>EN_COURS</strong>
+                        (paiement et remise des cles immediats).
+                    </p>
+                    <select name="statutInitial" class="form-select" required>
+                        <option th:each="s : ${statutsAutorises}" th:value="${s}" th:text="${s}"></option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Apercu prix total (visible une fois la voiture choisie) -->
+            <div class="card border-0 shadow-sm mb-4" id="prixPreviewCard" style="display:none;" th:unless="${voituresDisponibles.empty}">
+                <div class="card-body bg-light">
+                    <h5 class="card-title mb-3"><i class="fa-solid fa-calculator me-2 text-primary"></i>Estimation du prix</h5>
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <small class="text-muted d-block">Duree</small>
+                            <span class="fs-5"><strong id="nombreJoursPreview">0</strong> jour(s)</span>
+                            <small class="text-muted ms-2">a <span id="tarifPreview">0</span> DT/jour</small>
+                        </div>
+                        <div class="col-md-6 text-md-end">
+                            <small class="text-muted d-block">Prix total</small>
+                            <span class="fs-3 fw-bold text-primary">
+                                <span id="prixTotalPreview">0</span> DT
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-end" th:unless="${voituresDisponibles.empty}">
+                <a th:href="@{/admin/locations}" class="btn btn-outline-secondary me-2">Annuler</a>
+                <button type="submit" class="btn btn-primary px-4">
+                    <i class="fa-solid fa-check me-2"></i>Creer la location
+                </button>
+            </div>
+        </form>
+
+    </div>
+
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+
+<script>
+// Date fin >= date debut + 1 jour (interdit selectionner avant la date debut)
+(function() {
+    var dDebut = document.getElementById('dateDebut');
+    var dFin   = document.getElementById('dateFin');
+    if (!dDebut || !dFin) return;
+    function syncMinFin() {
+        if (!dDebut.value) return;
+        var d = new Date(dDebut.value);
+        d.setDate(d.getDate() + 1);
+        var min = d.toISOString().substring(0, 10);
+        dFin.min = min;
+        if (dFin.value && dFin.value < min) dFin.value = min;
+    }
+    dDebut.addEventListener('change', syncMinFin);
+    syncMinFin();
+})();
+
+// Surligner la voiture selectionnee + maj prix preview
+document.querySelectorAll('.voiture-radio').forEach(function(r) {
+    r.addEventListener('change', function() {
+        document.querySelectorAll('.voiture-card').forEach(function(c) {
+            c.classList.remove('border-primary', 'shadow');
+        });
+        if (r.checked) {
+            r.closest('.voiture-card').classList.add('border-primary', 'shadow');
+        }
+        updatePrixPreview();
+    });
+});
+
+// Calcul live du prix total
+function updatePrixPreview() {
+    var dDebut = document.getElementById('dateDebut').value;
+    var dFin = document.getElementById('dateFin').value;
+    var voitureChecked = document.querySelector('.voiture-radio:checked');
+    var card = document.getElementById('prixPreviewCard');
+    if (!card) return;
+    if (!dDebut || !dFin || !voitureChecked) { card.style.display = 'none'; return; }
+    var d1 = new Date(dDebut), d2 = new Date(dFin);
+    var jours = Math.round((d2 - d1) / (24*3600*1000)) + 1;
+    if (jours <= 0) { card.style.display = 'none'; return; }
+    var tarif = parseFloat(voitureChecked.dataset.tarif || '0');
+    var total = (tarif * jours).toFixed(2);
+    document.getElementById('nombreJoursPreview').textContent = jours;
+    document.getElementById('tarifPreview').textContent = tarif.toFixed(2);
+    document.getElementById('prixTotalPreview').textContent = total;
+    card.style.display = '';
+}
+// Init au cas ou les dates etaient deja en query
+updatePrixPreview();
+</script>
+</body>
+</html>

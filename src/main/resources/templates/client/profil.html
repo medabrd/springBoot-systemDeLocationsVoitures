@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Mon profil')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<div th:replace="~{fragments/layout :: bannerBanni}"></div>
+<div th:replace="~{fragments/layout :: alerts}"></div>
+
+<main class="container py-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fa-solid fa-user me-2 text-primary"></i> Mon profil</h2>
+        <div class="d-flex gap-2 align-items-center">
+            <span th:if="${profilComplet}" class="badge bg-success">
+                <i class="fa-solid fa-circle-check me-1"></i> Profil complet
+            </span>
+            <span th:unless="${profilComplet}" class="badge bg-warning text-dark"
+                  th:title="'Manque : ' + ${#strings.listJoin(client.elementsManquants, ', ')}">
+                <i class="fa-solid fa-circle-exclamation me-1"></i> Profil incomplet
+            </span>
+            <a th:href="@{/client/profil/modifier}" class="btn btn-primary">
+                <i class="fa-solid fa-pen me-2"></i>Modifier
+            </a>
+        </div>
+    </div>
+
+    <!-- Compte -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body">
+            <h5 class="card-title mb-3"><i class="fa-solid fa-circle-user me-2 text-primary"></i>Compte</h5>
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <small class="text-muted d-block">Prenom</small>
+                    <strong th:text="${connectedUser.prenom}">--</strong>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <small class="text-muted d-block">Nom</small>
+                    <strong th:text="${connectedUser.nom}">--</strong>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <small class="text-muted d-block"><i class="fa-solid fa-envelope me-1"></i>Email</small>
+                    <strong th:text="${connectedUser.email}">--</strong>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Coordonnees + photo -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body">
+            <h5 class="card-title mb-3"><i class="fa-solid fa-address-card me-2 text-primary"></i>Coordonnees</h5>
+            <div class="row align-items-center">
+                <div class="col-md-3 text-center mb-3">
+                    <img th:if="${client.photoProfile}"
+                         th:src="@{|/uploads/${client.photoProfile}|}"
+                         alt="Photo profil" class="rounded-circle"
+                         style="width:120px; height:120px; object-fit:cover; border:3px solid #dee2e6;"/>
+                    <img th:unless="${client.photoProfile}"
+                         th:src="@{|https://ui-avatars.com/api/?name=${connectedUser.prenom}+${connectedUser.nom}&size=200&background=0d6efd&color=fff|}"
+                         alt="Photo defaut" class="rounded-circle"
+                         style="width:120px; height:120px; object-fit:cover;"/>
+                </div>
+                <div class="col-md-9">
+                    <div class="row">
+                        <div class="col-md-12 mb-2">
+                            <small class="text-muted d-block"><i class="fa-solid fa-phone me-1"></i>Telephone</small>
+                            <strong th:if="${client.telephone}" th:text="${client.telephone}">--</strong>
+                            <span th:unless="${client.telephone}" class="text-muted fst-italic">Non renseigne</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Documents -->
+    <div class="row g-3 mb-4">
+        <!-- Permis -->
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <h6 class="card-title mb-3">
+                        <i class="fa-solid fa-id-card me-2 text-primary"></i>Permis de conduire
+                    </h6>
+
+                    <small class="text-muted d-block">N. permis</small>
+                    <p class="mb-2">
+                        <strong th:if="${client.permis != null and client.permis.numero != null}"
+                                th:text="${client.permis.numero}">--</strong>
+                        <span th:unless="${client.permis != null and client.permis.numero != null}"
+                              class="text-muted fst-italic">Non renseigne</span>
+                    </p>
+
+                    <div class="row mb-3" th:if="${client.permis != null}">
+                        <div class="col-6">
+                            <small class="text-muted d-block">Obtention</small>
+                            <span th:if="${client.permis.dateObtention}"
+                                  th:text="${#temporals.format(client.permis.dateObtention, 'dd/MM/yyyy')}">--</span>
+                            <span th:unless="${client.permis.dateObtention}"
+                                  class="text-muted fst-italic">--</span>
+                        </div>
+                        <div class="col-6">
+                            <small class="text-muted d-block">Expiration</small>
+                            <span th:if="${client.permis.dateExpiration}"
+                                  th:text="${#temporals.format(client.permis.dateExpiration, 'dd/MM/yyyy')}"
+                                  th:classappend="${client.permis.expirationValide()} ? '' : 'text-danger fw-bold'">--</span>
+                            <span th:unless="${client.permis.dateExpiration}"
+                                  class="text-muted fst-italic">--</span>
+                        </div>
+                    </div>
+
+                    <div class="text-center">
+                        <img th:if="${client.permis != null and client.permis.photo != null}"
+                             th:src="@{|/uploads/${client.permis.photo}|}"
+                             alt="Photo permis" class="img-fluid rounded border"
+                             style="max-height:200px;"/>
+                        <div th:unless="${client.permis != null and client.permis.photo != null}"
+                             class="border rounded p-4 text-center text-muted bg-light">
+                            <i class="fa-regular fa-image fa-2x"></i>
+                            <p class="small mb-0 mt-2">Aucune photo</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CIN -->
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <h6 class="card-title mb-3">
+                        <i class="fa-solid fa-id-badge me-2 text-primary"></i>Carte d'identite (CIN)
+                    </h6>
+
+                    <small class="text-muted d-block">N. CIN</small>
+                    <p class="mb-3">
+                        <strong th:if="${client.numeroCIN}" th:text="${client.numeroCIN}">--</strong>
+                        <span th:unless="${client.numeroCIN}" class="text-muted fst-italic">Non renseigne</span>
+                    </p>
+
+                    <div class="text-center">
+                        <img th:if="${client.photoCIN}"
+                             th:src="@{|/uploads/${client.photoCIN}|}"
+                             alt="Photo CIN" class="img-fluid rounded border"
+                             style="max-height:200px;"/>
+                        <div th:unless="${client.photoCIN}"
+                             class="border rounded p-4 text-center text-muted bg-light">
+                            <i class="fa-regular fa-image fa-2x"></i>
+                            <p class="small mb-0 mt-2">Aucune photo</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alerte profil incomplet avec liste des elements manquants -->
+    <div th:unless="${profilComplet}" class="alert alert-warning">
+        <div class="d-flex align-items-start">
+            <i class="fa-solid fa-triangle-exclamation fa-2x me-3 mt-1"></i>
+            <div class="flex-grow-1">
+                <strong>Profil incomplet.</strong>
+                Pour pouvoir louer une voiture, il vous manque encore :
+                <ul class="mb-0 mt-2">
+                    <li th:each="m : ${client.elementsManquants}" th:text="${m}">--</li>
+                </ul>
+            </div>
+            <a th:href="@{/client/profil/modifier}" class="btn btn-warning ms-3 align-self-center">
+                Completer maintenant
+            </a>
+        </div>
+    </div>
+
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Utilisateur')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<div th:replace="~{fragments/layout :: alerts}"></div>
+
+<main class="container py-4">
+
+    <a th:href="@{/admin/utilisateurs}" class="text-muted text-decoration-none mb-3 d-inline-block">
+        <i class="fa-solid fa-arrow-left me-1"></i> Retour aux utilisateurs
+    </a>
+
+    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+        <h2 th:text="${utilisateur.prenom + ' ' + utilisateur.nom}"></h2>
+        <div>
+            <span class="badge bg-success" th:if="${utilisateur.actif}">Active</span>
+            <span class="badge bg-warning text-dark" th:unless="${utilisateur.actif}">Non active</span>
+            <span class="badge bg-danger ms-1" th:if="${estBanni}">Banni</span>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body">
+            <h6 class="card-title">Informations</h6>
+            <div class="row">
+                <div class="col-md-6">
+                    <p class="mb-1"><strong>Email :</strong> <span th:text="${utilisateur.email}"></span></p>
+                    <p class="mb-1"><strong>Inscrit le :</strong> <span th:text="${#temporals.format(utilisateur.dateInscription, 'dd/MM/yyyy HH:mm')}"></span></p>
+                    <p class="mb-1"><strong>Telephone :</strong> <span th:text="${utilisateur.telephone}">-</span></p>
+                </div>
+                <div class="col-md-6">
+                    <p class="mb-1"><strong>Permis :</strong>
+                        <code th:if="${utilisateur.permis != null}" th:text="${utilisateur.permis.numero}">-</code>
+                        <span th:unless="${utilisateur.permis != null}" class="text-muted fst-italic">non renseigne</span>
+                    </p>
+                    <p class="mb-1" th:if="${utilisateur.permis != null}">
+                        <small class="text-muted">
+                            Obtention :
+                            <span th:if="${utilisateur.permis.dateObtention}"
+                                  th:text="${#temporals.format(utilisateur.permis.dateObtention, 'dd/MM/yyyy')}">-</span>
+                            <span th:unless="${utilisateur.permis.dateObtention}">-</span>
+                            &nbsp;&middot;&nbsp;
+                            Expiration :
+                            <span th:if="${utilisateur.permis.dateExpiration}"
+                                  th:text="${#temporals.format(utilisateur.permis.dateExpiration, 'dd/MM/yyyy')}"
+                                  th:classappend="${utilisateur.permis.expirationValide()} ? '' : 'text-danger fw-bold'">-</span>
+                            <span th:unless="${utilisateur.permis.dateExpiration}">-</span>
+                        </small>
+                    </p>
+                    <p class="mb-1"><strong>CIN :</strong> <code th:text="${utilisateur.numeroCIN}">-</code></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Documents -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-4" th:if="${utilisateur.photoProfile}">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+                    <small class="text-muted d-block mb-2">Photo profil</small>
+                    <a th:href="@{|/uploads/${utilisateur.photoProfile}|}" target="_blank">
+                        <img th:src="@{|/uploads/${utilisateur.photoProfile}|}" class="preview-img"/>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4" th:if="${utilisateur.permis != null and utilisateur.permis.photo != null}">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+                    <small class="text-muted d-block mb-2">Photo permis</small>
+                    <a th:href="@{|/uploads/${utilisateur.permis.photo}|}" target="_blank">
+                        <img th:src="@{|/uploads/${utilisateur.permis.photo}|}" class="preview-img"/>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4" th:if="${utilisateur.photoCIN}">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+                    <small class="text-muted d-block mb-2">Photo CIN</small>
+                    <a th:href="@{|/uploads/${utilisateur.photoCIN}|}" target="_blank">
+                        <img th:src="@{|/uploads/${utilisateur.photoCIN}|}" class="preview-img"/>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bannissement -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body">
+            <h6 class="card-title"><i class="fa-solid fa-ban me-2"></i>Bannissement</h6>
+
+            <div th:if="${estBanni}">
+                <div class="alert alert-danger">
+                    <strong>Compte suspendu</strong> depuis le
+                    <span th:text="${#temporals.format(permisBanni.dateBan, 'dd/MM/yyyy HH:mm')}"></span>
+                    <br/>
+                    Motif : <em th:text="${permisBanni.motifBan}"></em>
+                </div>
+                <form th:action="@{|/admin/utilisateurs/${utilisateur.id}/debannir|}" method="post"
+                      onsubmit="return confirm('Debannir cet utilisateur ?')">
+                    <input type="hidden" name="numeroPermis" th:value="${permisBanni.numero}"/>
+                    <button type="submit" class="btn btn-success">
+                        <i class="fa-solid fa-circle-check me-2"></i>Debannir
+                    </button>
+                </form>
+            </div>
+
+            <div th:unless="${estBanni}">
+                <p class="text-muted small">Bannir bloque l'utilisateur sur son numero de permis. Il pourra toujours se connecter mais en lecture seule.</p>
+                <form th:action="@{|/admin/utilisateurs/${utilisateur.id}/bannir|}" th:object="${banForm}" method="post">
+                    <div class="row g-2">
+                        <div class="col-md-4">
+                            <input type="text" class="form-control" th:field="*{numeroPermis}" placeholder="N. Permis" required/>
+                        </div>
+                        <div class="col-md-6">
+                            <input type="text" class="form-control" th:field="*{motif}" placeholder="Motif" required/>
+                        </div>
+                        <div class="col-md-2 d-grid">
+                            <button type="submit" class="btn btn-danger"
+                                    onclick="return confirm('Bannir cet utilisateur ?')">
+                                <i class="fa-solid fa-ban"></i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+                <small class="text-muted" th:if="${utilisateur.numeroPermis != null}">
+                    Le n. permis du client est : <code th:text="${utilisateur.numeroPermis}"></code>
+                </small>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

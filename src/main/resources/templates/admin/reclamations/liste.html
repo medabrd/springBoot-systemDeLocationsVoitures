@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Reclamations')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<div th:replace="~{fragments/layout :: alerts}"></div>
+
+<main class="container py-4">
+
+    <h2><i class="fa-solid fa-triangle-exclamation me-2 text-warning"></i> Reclamations</h2>
+
+    <div class="d-flex flex-wrap gap-2 my-3">
+        <a th:href="@{/admin/reclamations}" class="btn btn-sm"
+           th:classappend="${filtreStatut == null} ? 'btn-primary' : 'btn-outline-primary'">Toutes</a>
+        <a th:each="s : ${statuts}" th:href="@{|/admin/reclamations?statut=${s}|}"
+           class="btn btn-sm" th:classappend="${filtreStatut == s} ? 'btn-primary' : 'btn-outline-primary'"
+           th:text="${s}"></a>
+    </div>
+
+    <div class="card border-0 shadow-sm" th:unless="${reclamations.empty}">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                <tr><th>Date</th><th>Client</th><th>Location</th><th>Categorie</th><th>Description</th><th>Statut</th><th></th></tr>
+                </thead>
+                <tbody>
+                <tr th:each="r : ${reclamations.content}">
+                    <td><small th:text="${#temporals.format(r.dateCreation, 'dd/MM/yyyy HH:mm')}"></small></td>
+                    <td>
+                        <span th:if="${r.location != null and r.location.client != null}"
+                              th:text="${r.location.client.prenom + ' ' + r.location.client.nom}"></span>
+                        <span th:unless="${r.location != null and r.location.client != null}" class="text-muted small fst-italic">Client non disponible</span>
+                    </td>
+                    <td>
+                        <small th:if="${r.location != null}">Loc #<span th:text="${r.location.id}"></span></small>
+                        <small th:unless="${r.location != null}" class="text-muted fst-italic">supprimee</small>
+                    </td>
+                    <td><span class="badge bg-secondary" th:text="${r.categorie}"></span></td>
+                    <td><small th:text="${#strings.abbreviate(r.description, 80)}"></small></td>
+                    <td>
+                        <span class="badge badge-statut" th:classappend="'badge-' + ${r.statut}" th:text="${r.statut}"></span>
+                    </td>
+                    <td class="text-nowrap">
+                        <a th:href="@{|/admin/reclamations/${r.id}|}" class="btn btn-sm btn-outline-primary" title="Voir">
+                            <i class="fa-solid fa-eye"></i>
+                        </a>
+                        <form th:action="@{|/admin/reclamations/${r.id}/supprimer|}" method="post" class="d-inline"
+                              onsubmit="return confirm('Supprimer cette reclamation ?')">
+                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Supprimer">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div th:if="${reclamations.empty}" class="alert alert-info text-center">Aucune reclamation.</div>
+
+    <div th:replace="~{fragments/pagination :: paginer(${reclamations}, ${urlBase})}"></div>
+
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

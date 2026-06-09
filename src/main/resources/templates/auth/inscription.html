@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Inscription')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<div th:replace="~{fragments/layout :: alerts}"></div>
+
+<main class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-7 col-lg-6">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4 p-md-5">
+                    <h2 class="text-center mb-2">
+                        <i class="fa-solid fa-user-plus text-primary me-2"></i>
+                        Creer un compte
+                    </h2>
+                    <p class="text-center text-muted small mb-4">
+                        Creation rapide. Le permis et la CIN ne seront demandes qu'au moment de louer.
+                    </p>
+
+                    <form th:action="@{/auth/inscription}" th:object="${inscriptionForm}" method="post" novalidate>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" id="prenom"
+                                           th:field="*{prenom}"
+                                           th:classappend="${#fields.hasErrors('prenom')} ? 'is-invalid'"
+                                           placeholder="Prenom" />
+                                    <label for="prenom" class="required-mark">Prenom</label>
+                                    <div class="invalid-feedback" th:errors="*{prenom}"></div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" id="nom"
+                                           th:field="*{nom}"
+                                           th:classappend="${#fields.hasErrors('nom')} ? 'is-invalid'"
+                                           placeholder="Nom" />
+                                    <label for="nom" class="required-mark">Nom</label>
+                                    <div class="invalid-feedback" th:errors="*{nom}"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input type="email" class="form-control" id="email"
+                                   th:field="*{email}"
+                                   th:classappend="${#fields.hasErrors('email')} ? 'is-invalid'"
+                                   placeholder="Email" />
+                            <label for="email" class="required-mark"><i class="fa-solid fa-envelope me-1"></i>Email</label>
+                            <div class="invalid-feedback" th:errors="*{email}"></div>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input type="password" class="form-control" id="motDePasse"
+                                   th:field="*{motDePasse}"
+                                   th:classappend="${#fields.hasErrors('motDePasse')} ? 'is-invalid'"
+                                   placeholder="Mot de passe" />
+                            <label for="motDePasse" class="required-mark"><i class="fa-solid fa-lock me-1"></i>Mot de passe (min. 6 caracteres)</label>
+                            <div class="invalid-feedback" th:errors="*{motDePasse}"></div>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input type="password" class="form-control" id="confirmationMotDePasse"
+                                   th:field="*{confirmationMotDePasse}"
+                                   th:classappend="${#fields.hasErrors('confirmationMotDePasse')} ? 'is-invalid'"
+                                   placeholder="Confirmation" />
+                            <label for="confirmationMotDePasse" class="required-mark"><i class="fa-solid fa-lock me-1"></i>Confirmer le mot de passe</label>
+                            <div class="invalid-feedback" th:errors="*{confirmationMotDePasse}"></div>
+                        </div>
+
+                        <div class="alert alert-info small">
+                            <i class="fa-solid fa-circle-info me-2"></i>
+                            Apres inscription, un email d'activation vous sera envoye. Cliquez sur le lien dans le mail pour activer votre compte.
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100 py-2 mb-3">
+                            <i class="fa-solid fa-user-plus me-2"></i>Creer mon compte
+                        </button>
+                    </form>
+
+                    <div class="text-center">
+                        <small class="text-muted">Deja un compte ?</small>
+                        <a th:href="@{/auth/login}" class="ms-1 text-decoration-none">
+                            Connexion <i class="fa-solid fa-arrow-right small"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

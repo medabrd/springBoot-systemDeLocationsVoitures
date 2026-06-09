@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Facture</title>
+    <style type="text/css">
+        @page { size: A4; margin: 2cm; }
+        body { font-family: Helvetica, Arial, sans-serif; font-size: 11pt; color: #222; }
+        .entete { border-bottom: 3px solid #0d6efd; padding-bottom: 10px; margin-bottom: 20px; }
+        .entete h1 { color: #0d6efd; margin: 0; font-size: 24pt; }
+        .entete p { margin: 2px 0; font-size: 9pt; color: #666; }
+        .infos { display: table; width: 100%; margin-bottom: 30px; }
+        .infos .col { display: table-cell; width: 50%; vertical-align: top; }
+        .infos h3 { font-size: 11pt; color: #0d6efd; margin: 0 0 8px 0; text-transform: uppercase; }
+        .infos p { margin: 3px 0; }
+        .num-facture { background: #0d6efd; color: white; padding: 8px 16px; display: inline-block; border-radius: 4px; font-weight: bold; }
+        table.detail { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        table.detail th { background: #0d6efd; color: white; padding: 10px; text-align: left; }
+        table.detail td { padding: 10px; border-bottom: 1px solid #eee; }
+        table.detail tr:nth-child(even) td { background: #f8f9fa; }
+        .totaux { width: 50%; float: right; margin-top: 20px; border-collapse: collapse; }
+        .totaux td { padding: 8px 12px; }
+        .totaux .label { text-align: right; color: #666; }
+        .totaux .montant { text-align: right; font-weight: bold; }
+        .totaux .total-final td { background: #0d6efd; color: white; font-size: 13pt; }
+        .footer { position: fixed; bottom: 1cm; left: 2cm; right: 2cm; text-align: center; font-size: 9pt; color: #999; border-top: 1px solid #eee; padding-top: 8px; }
+    </style>
+</head>
+<body>
+
+<div class="entete">
+    <h1>FACTURE</h1>
+    <p>Agence Location Voitures - Mini-projet Spring Boot</p>
+    <p>Genere le <span th:text="${dateGeneration}">--/--/---- --:--</span></p>
+</div>
+
+<div class="infos">
+    <div class="col">
+        <h3>Client</h3>
+        <p><strong th:text="${utilisateur.prenom + ' ' + utilisateur.nom}">Prenom Nom</strong></p>
+        <p th:text="${utilisateur.email}">email@exemple.com</p>
+        <p th:text="${client.telephone}">+216 00 000 000</p>
+        <p>CIN : <span th:text="${client.numeroCIN}">--</span></p>
+        <p>Permis : <span th:text="${client.numeroPermis}">--</span></p>
+    </div>
+    <div class="col" style="text-align:right;">
+        <span class="num-facture" th:text="${numeroFacture}">FACT-000000</span>
+        <p style="margin-top:15px;">Reference location : #<span th:text="${location.id}">--</span></p>
+        <p>Statut : <strong th:text="${location.statut}">--</strong></p>
+    </div>
+</div>
+
+<h3 style="color:#0d6efd; margin-bottom:5px;">Detail de la location</h3>
+<table class="detail">
+    <thead>
+    <tr>
+        <th>Vehicule</th>
+        <th>Immatriculation</th>
+        <th>Periode</th>
+        <th style="text-align:center;">Jours</th>
+        <th style="text-align:right;">Tarif/jour</th>
+        <th style="text-align:right;">Sous-total</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>
+            <strong th:text="${voiture.marque.nom + ' ' + voiture.modele}">Marque Modele</strong><br/>
+            <small style="color:#666;" th:text="${voiture.couleur + ' - ' + voiture.annee}">Couleur - 2024</small>
+        </td>
+        <td th:text="${voiture.immatriculation}">--</td>
+        <td>
+            Du <span th:text="${location.dateDebut}">--/--/----</span><br/>
+            Au <span th:text="${location.dateFin}">--/--/----</span>
+        </td>
+        <td style="text-align:center;" th:text="${location.nombreJours}">0</td>
+        <td style="text-align:right;" th:text="${voiture.tarifJournalier} + ' DT'">0 DT</td>
+        <td style="text-align:right;" th:text="${location.prixTotal} + ' DT'">0 DT</td>
+    </tr>
+    </tbody>
+</table>
+
+<table class="totaux">
+    <tr>
+        <td class="label">Sous-total</td>
+        <td class="montant" th:text="${location.prixTotal} + ' DT'">0 DT</td>
+    </tr>
+    <tr class="total-final">
+        <td class="label" style="color:white;">TOTAL A PAYER (especes)</td>
+        <td class="montant" th:text="${location.prixTotal} + ' DT'">0 DT</td>
+    </tr>
+</table>
+
+<div style="clear:both; margin-top:60px; padding:15px; background:#fff3cd; border-left:4px solid #ffc107; border-radius:4px;">
+    <p style="margin:0;"><strong>Modalites de paiement</strong></p>
+    <p style="margin:5px 0 0;">Le reglement doit etre effectue en especes au bureau de l'agence avant le <strong th:text="${location.dateExpiration}">--</strong>. Passe ce delai, la pre-reservation sera automatiquement annulee.</p>
+</div>
+
+<div class="footer">
+    Agence Location Voitures - Mini-projet Spring Boot 2025-2026 - Document genere automatiquement
+</div>
+
+</body>
+</html>

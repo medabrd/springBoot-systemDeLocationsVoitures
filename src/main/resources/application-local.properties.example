@@ -1,0 +1,17 @@
+# ============================================================
+# Template des secrets locaux - copier en application-local.properties
+# ============================================================
+# 1. Copier ce fichier : cp application-local.properties.example application-local.properties
+# 2. Remplir les valeurs ci-dessous
+# 3. application-local.properties est gitignore, vos secrets ne seront jamais pousses
+#
+# Pour Gmail, generer un "mot de passe d'application" :
+# https://myaccount.google.com/apppasswords (necessite la 2FA activee)
+
+# --- Gmail SMTP (obligatoire pour l'envoi d'emails) ---
+spring.mail.username=votre.email@gmail.com
+spring.mail.password=xxxxxxxxxxxxxxxx
+app.mail.from=votre.email@gmail.com
+
+# --- MySQL (decommenter si vous avez un mot de passe sur root) ---
+# spring.datasource.password=votre_mot_de_passe_mysql

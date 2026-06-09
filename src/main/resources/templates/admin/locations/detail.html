@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Detail location')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<div th:replace="~{fragments/layout :: alerts}"></div>
+
+<main class="container py-4">
+
+    <a th:href="@{/admin/locations}" class="text-muted text-decoration-none mb-3 d-inline-block">
+        <i class="fa-solid fa-arrow-left me-1"></i> Retour aux locations
+    </a>
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h2 class="d-inline-block me-3">Location #<span th:text="${location.id}"></span></h2>
+            <span class="badge badge-statut fs-6" th:classappend="'badge-' + ${location.statut}" th:text="${location.statut}"></span>
+        </div>
+        <form th:action="@{|/admin/locations/${location.id}/supprimer|}" method="post" class="d-inline"
+              onsubmit="return confirm('Supprimer cette location ? Avis et reclamations associes seront conserves.')">
+            <button type="submit" class="btn btn-outline-danger">
+                <i class="fa-solid fa-trash me-1"></i>Supprimer
+            </button>
+        </form>
+    </div>
+
+    <!-- Infos -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <h6><i class="fa-solid fa-user me-2"></i>Client</h6>
+                    <div th:if="${location.client != null}">
+                        <p class="mb-1"><strong th:text="${location.client.prenom + ' ' + location.client.nom}"></strong></p>
+                        <p class="mb-1 small"><i class="fa-solid fa-envelope me-1"></i><span th:text="${location.client.email}"></span></p>
+                        <p class="mb-1 small"><i class="fa-solid fa-phone me-1"></i><span th:text="${location.client.telephone}"></span></p>
+                        <p class="mb-1 small">Permis : <code th:text="${location.client.numeroPermis}"></code></p>
+                        <p class="mb-0 small">CIN : <code th:text="${location.client.numeroCIN}"></code></p>
+                    </div>
+                    <p th:unless="${location.client != null}" class="text-muted small fst-italic mb-0">
+                        Compte client supprime, informations non disponibles.
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <h6><i class="fa-solid fa-car me-2"></i>Vehicule</h6>
+                    <div th:if="${location.voiture != null}">
+                        <p class="mb-1"><strong th:text="${location.voiture.marque.nom + ' ' + location.voiture.modele}"></strong></p>
+                        <p class="mb-1 small">Immatriculation : <code th:text="${location.voiture.immatriculation}"></code></p>
+                        <p class="mb-0 small" th:text="${location.voiture.couleur + ' - ' + location.voiture.annee}"></p>
+                    </div>
+                    <p th:unless="${location.voiture != null}" class="text-muted small fst-italic mb-0">
+                        Vehicule supprime, informations non disponibles.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <small class="text-muted">Du</small>
+                    <h5 th:text="${#temporals.format(location.dateDebut, 'dd/MM/yyyy')}"></h5>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <small class="text-muted">Au</small>
+                    <h5 th:text="${#temporals.format(location.dateFin, 'dd/MM/yyyy')}"></h5>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <small class="text-muted">Duree</small>
+                    <h5><span th:text="${location.nombreJours}"></span> jour(s)</h5>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <small class="text-muted">Prix total</small>
+                    <h5 class="text-primary" th:text="${location.prixTotal} + ' DT'"></h5>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Second conducteur -->
+    <div class="card border-0 shadow-sm mb-4" th:if="${location.conducteurSecondaire}">
+        <div class="card-body">
+            <h6><i class="fa-solid fa-user-plus me-2"></i>Second conducteur</h6>
+            <div class="row">
+                <div class="col-md-6">
+                    <p class="mb-1"><strong th:text="${location.conducteurSecondaire.prenom + ' ' + location.conducteurSecondaire.nom}"></strong></p>
+                    <p class="mb-1 small">Permis : <code th:text="${location.conducteurSecondaire.permis.numero}"></code></p>
+                    <p class="mb-1 small" th:if="${location.conducteurSecondaire.permis.dateExpiration}">
+                        <span class="text-muted">Expire :</span>
+                        <span th:text="${#temporals.format(location.conducteurSecondaire.permis.dateExpiration, 'dd/MM/yyyy')}"
+                              th:classappend="${location.conducteurSecondaire.permis.expirationValide()} ? '' : 'text-danger fw-bold'"></span>
+                    </p>
+                    <p class="mb-0 small">CIN : <code th:text="${location.conducteurSecondaire.numeroCIN}"></code></p>
+                </div>
+                <div class="col-md-3">
+                    <small class="text-muted d-block">Permis</small>
+                    <a th:if="${location.conducteurSecondaire.permis.photo != null}"
+                       th:href="@{|/uploads/${location.conducteurSecondaire.permis.photo}|}" target="_blank">
+                        <img th:src="@{|/uploads/${location.conducteurSecondaire.permis.photo}|}" class="preview-img"/>
+                    </a>
+                </div>
+                <div class="col-md-3">
+                    <small class="text-muted d-block">CIN</small>
+                    <a th:href="@{|/uploads/${location.conducteurSecondaire.photoCIN}|}" target="_blank">
+                        <img th:src="@{|/uploads/${location.conducteurSecondaire.photoCIN}|}" class="preview-img"/>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Actions selon statut -->
+    <div class="card border-0 shadow-sm mb-4" th:if="${location.statut.name() == 'EN_ATTENTE'}">
+        <div class="card-body">
+            <h6 class="card-title"><i class="fa-solid fa-gavel me-2"></i>Decision</h6>
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <form th:action="@{|/admin/locations/${location.id}/accepter|}" method="post">
+                        <button type="submit" class="btn btn-success w-100"
+                                onclick="return confirm('Accepter cette demande ? La facture sera envoyee au client.')">
+                            <i class="fa-solid fa-circle-check me-2"></i>Accepter (envoie facture PDF)
+                        </button>
+                    </form>
+                </div>
+                <div class="col-md-6">
+                    <form th:action="@{|/admin/locations/${location.id}/refuser|}" method="post" class="row g-2">
+                        <div class="col-12">
+                            <input type="text" name="motif" class="form-control" placeholder="Motif du refus (obligatoire)" required/>
+                        </div>
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-danger w-100">
+                                <i class="fa-solid fa-circle-xmark me-2"></i>Refuser
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm mb-4" th:if="${location.statut.name() == 'ACCEPTEE'}">
+        <div class="card-body">
+            <h6><i class="fa-solid fa-clock me-2 text-warning"></i>Pre-reservation en attente de paiement</h6>
+            <p>Expiration le : <strong th:text="${#temporals.format(location.dateExpiration, 'dd/MM/yyyy HH:mm')}"></strong></p>
+
+            <form th:action="@{|/admin/locations/${location.id}/valider-paiement|}" method="post">
+                <button type="submit" class="btn btn-primary"
+                        onclick="return confirm('Confirmer le paiement en especes ?')">
+                    <i class="fa-solid fa-cash-register me-2"></i>Valider le paiement (especes)
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm mb-4" th:if="${location.statut.name() == 'PAYEE'}">
+        <div class="card-body">
+            <h6><i class="fa-solid fa-key me-2 text-primary"></i>Remise des cles</h6>
+            <p class="text-muted small mb-3">
+                Le client se presente au bureau pour recuperer les cles le <strong th:text="${#temporals.format(location.dateDebut, 'dd/MM/yyyy')}"></strong>.
+                Cliquez ci-dessous des que les cles ont ete remises.
+            </p>
+            <form th:action="@{|/admin/locations/${location.id}/demarrer|}" method="post">
+                <button type="submit" class="btn btn-success"
+                        onclick="return confirm('Confirmer la remise des cles au client ?')">
+                    <i class="fa-solid fa-play me-2"></i>Remettre les cles (passer en EN_COURS)
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm mb-4" th:if="${location.statut.name() == 'EN_COURS'}">
+        <div class="card-body">
+            <h6><i class="fa-solid fa-flag-checkered me-2 text-success"></i>Restitution des cles</h6>
+            <p class="text-muted small mb-3">
+                Date de fin prevue : <strong th:text="${#temporals.format(location.dateFin, 'dd/MM/yyyy')}"></strong>.
+                Cliquez ci-dessous des que le client a restitue le vehicule.
+            </p>
+            <form th:action="@{|/admin/locations/${location.id}/clore|}" method="post">
+                <button type="submit" class="btn btn-primary"
+                        onclick="return confirm('Confirmer la restitution du vehicule ?')">
+                    <i class="fa-solid fa-circle-check me-2"></i>Cloturer la location (passer en TERMINEE)
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="alert alert-danger" th:if="${location.statut.name() == 'REFUSEE'}">
+        <strong>Refusee.</strong> Motif : <em th:text="${location.motifRefus}"></em>
+    </div>
+
+    <!-- Reclamations -->
+    <div class="card border-0 shadow-sm mb-4" th:unless="${location.reclamations.empty}">
+        <div class="card-body">
+            <h6><i class="fa-solid fa-triangle-exclamation me-2"></i>Reclamations sur cette location</h6>
+            <a th:each="r : ${location.reclamations}"
+               th:href="@{|/admin/reclamations/${r.id}|}"
+               class="d-block border rounded p-2 mb-2 text-decoration-none">
+                <div class="d-flex justify-content-between">
+                    <strong th:text="${r.categorie}"></strong>
+                    <span class="badge badge-statut" th:classappend="'badge-' + ${r.statut}" th:text="${r.statut}"></span>
+                </div>
+                <p class="mb-0 small text-muted" th:text="${#strings.abbreviate(r.description, 100)}"></p>
+            </a>
+        </div>
+    </div>
+
+    <!-- Avis -->
+    <div class="card border-0 shadow-sm mb-4" th:if="${location.avis}">
+        <div class="card-body">
+            <h6><i class="fa-solid fa-star me-2 text-warning"></i>Avis client</h6>
+            <div class="star-rating mb-2">
+                <i th:each="i : ${#numbers.sequence(1, 5)}"
+                   class="fa-solid fa-star"
+                   th:classappend="${i > location.avis.note} ? 'empty'"></i>
+            </div>
+            <p class="mb-0" th:text="${location.avis.commentaire}"></p>
+        </div>
+    </div>
+
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

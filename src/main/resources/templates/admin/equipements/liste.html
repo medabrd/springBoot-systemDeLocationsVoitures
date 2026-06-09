@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Equipements')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<div th:replace="~{fragments/layout :: alerts}"></div>
+
+<main class="container py-4">
+    <h2><i class="fa-solid fa-screwdriver-wrench me-2 text-primary"></i> Equipements</h2>
+
+    <div class="row mt-4 g-4">
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <h6 class="card-title">Nouvel equipement</h6>
+                    <form th:action="@{/admin/equipements}" th:object="${equipement}" method="post">
+                        <div class="mb-2">
+                            <input type="text" class="form-control" th:field="*{nom}" placeholder="Nom"
+                                   th:classappend="${#fields.hasErrors('nom')} ? 'is-invalid'"/>
+                            <div class="invalid-feedback" th:errors="*{nom}"></div>
+                        </div>
+                        <div class="mb-2">
+                            <textarea class="form-control" th:field="*{description}" placeholder="Description (optionnelle)" rows="2"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fa-solid fa-plus me-1"></i>Ajouter
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="list-group shadow-sm" th:unless="${equipements.empty}">
+                <div th:each="e : ${equipements}" class="list-group-item">
+                    <form th:action="@{|/admin/equipements/${e.id}/modifier|}" method="post" class="row g-2 align-items-start m-0">
+                        <div class="col-md-4">
+                            <input type="text" name="nom" th:value="${e.nom}" class="form-control form-control-sm" required/>
+                        </div>
+                        <div class="col-md-6">
+                            <textarea name="description" class="form-control form-control-sm" rows="2" placeholder="Description (optionnelle)" th:text="${e.description}"></textarea>
+                        </div>
+                        <div class="col-md-2 text-end">
+                            <button type="submit" class="btn btn-sm btn-outline-primary" title="Enregistrer">
+                                <i class="fa-solid fa-save"></i>
+                            </button>
+                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Supprimer"
+                                    th:formaction="@{|/admin/equipements/${e.id}/supprimer|}"
+                                    onclick="return confirm('Supprimer cet equipement ?')">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div th:if="${equipements.empty}" class="alert alert-info">Aucun equipement enregistre.</div>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

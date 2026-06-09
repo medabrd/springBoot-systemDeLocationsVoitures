@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Avis')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<div th:replace="~{fragments/layout :: alerts}"></div>
+
+<main class="container py-4">
+
+    <h2><i class="fa-solid fa-star me-2 text-warning"></i> Avis clients</h2>
+
+    <div class="row g-3 mt-3" th:unless="${avisList.empty}">
+        <div class="col-md-6" th:each="a : ${avisList.content}">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div class="star-rating">
+                            <i th:each="i : ${#numbers.sequence(1, 5)}"
+                               class="fa-solid fa-star"
+                               th:classappend="${i > a.note} ? 'empty'"></i>
+                        </div>
+                        <form th:action="@{|/admin/avis/${a.id}/supprimer|}" method="post"
+                              onsubmit="return confirm('Supprimer cet avis ?')">
+                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Moderer">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </form>
+                    </div>
+                    <p class="mb-2" th:text="${a.commentaire}"></p>
+                    <small class="text-muted" th:if="${a.location != null}">
+                        Par
+                        <strong th:if="${a.location.client != null}"
+                                th:text="${a.location.client.prenom + ' ' + a.location.client.nom}"></strong>
+                        <em th:unless="${a.location.client != null}" class="fst-italic">client supprime</em>
+                        sur <a th:href="@{|/admin/locations/${a.location.id}|}">location #<span th:text="${a.location.id}"></span></a>
+                        - <span th:if="${a.location.voiture != null}"
+                                th:text="${a.location.voiture.marque.nom + ' ' + a.location.voiture.modele}"></span>
+                        <em th:unless="${a.location.voiture != null}" class="fst-italic">vehicule supprime</em>
+                        - <span th:text="${#temporals.format(a.dateCreation, 'dd/MM/yyyy')}"></span>
+                    </small>
+                    <small class="text-muted fst-italic" th:unless="${a.location != null}">
+                        Location supprimee &middot; <span th:text="${#temporals.format(a.dateCreation, 'dd/MM/yyyy')}"></span>
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:if="${avisList.empty}" class="alert alert-info text-center mt-4">Aucun avis pour le moment.</div>
+
+    <div th:replace="~{fragments/pagination :: paginer(${avisList}, ${urlBase})}"></div>
+
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

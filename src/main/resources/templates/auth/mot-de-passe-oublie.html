@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Mot de passe oublie')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<div th:replace="~{fragments/layout :: alerts}"></div>
+
+<main class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4 p-md-5">
+                    <h2 class="text-center mb-3">
+                        <i class="fa-solid fa-key text-primary me-2"></i>
+                        Mot de passe oublie
+                    </h2>
+                    <p class="text-muted text-center small mb-4">
+                        Saisissez l'email de votre compte. Si un compte existe, vous recevrez un lien
+                        de reinitialisation valide 1 heure.
+                    </p>
+
+                    <form th:action="@{/auth/mot-de-passe-oublie}" th:object="${motDePasseOublieForm}" method="post" novalidate>
+                        <div class="form-floating mb-3">
+                            <input type="email" class="form-control" id="email" th:field="*{email}"
+                                   th:classappend="${#fields.hasErrors('email')} ? 'is-invalid'"
+                                   placeholder="Email" required autofocus />
+                            <label for="email"><i class="fa-solid fa-envelope me-1"></i> Email</label>
+                            <div class="invalid-feedback" th:errors="*{email}"></div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100 py-2 mb-3">
+                            <i class="fa-solid fa-paper-plane me-2"></i>Envoyer le lien
+                        </button>
+                    </form>
+
+                    <div class="text-center">
+                        <a th:href="@{/auth/login}" class="text-decoration-none small">
+                            <i class="fa-solid fa-arrow-left me-1"></i> Retour a la connexion
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

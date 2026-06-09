@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Mon espace')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<div th:replace="~{fragments/layout :: bannerBanni}"></div>
+<div th:replace="~{fragments/layout :: alerts}"></div>
+
+<main class="container py-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-1">
+                Bonjour <span th:text="${connectedUser.prenom}"></span>
+                <i class="fa-regular fa-hand"></i>
+            </h2>
+            <p class="text-muted mb-0">Bienvenue dans votre espace client</p>
+        </div>
+    </div>
+
+    <!-- Alerte profil incomplet avec liste des elements manquants -->
+    <div th:if="${!profilComplet and !clientBanni}" class="alert alert-warning shadow-sm">
+        <div class="d-flex align-items-start">
+            <i class="fa-solid fa-triangle-exclamation fa-2x me-3 mt-1"></i>
+            <div class="flex-grow-1">
+                <strong>Votre profil est incomplet.</strong>
+                Pour soumettre une demande de location, il vous manque encore :
+                <ul class="mb-0 mt-2">
+                    <li th:each="m : ${connectedUser.elementsManquants}" th:text="${m}">--</li>
+                </ul>
+            </div>
+            <a th:href="@{/client/profil/modifier}" class="btn btn-warning ms-3 align-self-center">
+                Completer maintenant
+            </a>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <a th:href="@{/catalogue}" class="card text-decoration-none border-0 shadow-sm h-100">
+                <div class="card-body text-center p-4">
+                    <i class="fa-solid fa-car fa-3x text-primary mb-3"></i>
+                    <h5 class="text-dark">Catalogue</h5>
+                    <p class="text-muted small mb-0">Parcourir les voitures disponibles</p>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-md-4">
+            <a th:href="@{/client/locations}" class="card text-decoration-none border-0 shadow-sm h-100">
+                <div class="card-body text-center p-4">
+                    <i class="fa-solid fa-key fa-3x text-success mb-3"></i>
+                    <h5 class="text-dark">Mes locations</h5>
+                    <p class="text-muted small mb-0">Demandes, locations actives, historique</p>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-md-4">
+            <a th:href="@{/client/profil}" class="card text-decoration-none border-0 shadow-sm h-100">
+                <div class="card-body text-center p-4">
+                    <i class="fa-solid fa-user fa-3x text-info mb-3"></i>
+                    <h5 class="text-dark">Mon profil</h5>
+                    <p class="text-muted small mb-0">Documents, photo, coordonnees</p>
+                </div>
+            </a>
+        </div>
+    </div>
+
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

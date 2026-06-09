@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><title>Donnez-nous votre avis</title></head>
+<body style="font-family: Arial, sans-serif; background:#f4f4f4; margin:0; padding:20px;">
+<div style="max-width:600px; margin:auto; background:#fff; padding:30px; border-radius:8px;">
+    <h2 style="color:#0d6efd;">Donnez-nous votre avis</h2>
+    <p>Bonjour <strong th:text="${prenom + ' ' + nom}"></strong>,</p>
+    <p>Votre location du vehicule <strong th:text="${voiture}"></strong> est terminee. Nous esperons que tout s'est bien passe.</p>
+    <p>Pour nous aider a ameliorer notre service, nous vous invitons a laisser un avis :</p>
+    <p style="text-align:center; margin:30px 0;">
+        <a th:href="${lienAvis}" style="background:#ffc107; color:#000; padding:12px 24px; text-decoration:none; border-radius:4px; font-weight:bold;">
+            Donner mon avis
+        </a>
+    </p>
+    <p>Merci pour votre confiance.</p>
+    <p>L'equipe Agence Location Voitures</p>
+</div>
+</body></html>

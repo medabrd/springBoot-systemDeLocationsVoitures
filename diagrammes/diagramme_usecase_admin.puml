@@ -1,0 +1,88 @@
+@startuml DiagrammeUseCaseAdmin
+title Diagramme de Cas d'Utilisation - Cote Administrateur
+
+skinparam packageStyle rectangle
+skinparam actorStyle awesome
+skinparam usecaseFontSize 13
+
+actor "Administrateur" as A
+
+rectangle "Application - Back-Office" {
+
+  package "Authentification" {
+    usecase "Se connecter" as UC_LOGIN
+    usecase "Se deconnecter" as UC_LOGOUT
+  }
+
+  package "Tableau de Bord" {
+    usecase "Consulter le dashboard\n(KPIs, statistiques)" as UA_DASH
+  }
+
+  package "Gestion de la Flotte" {
+    usecase "Gerer les voitures\n(CRUD + upload image)" as UA_VOIT
+    usecase "Gerer les marques" as UA_MARQ
+    usecase "Gerer les categories" as UA_CATEG
+    usecase "Gerer les equipements" as UA_EQUIP
+    usecase "Gerer les details\ntechniques" as UA_DET
+  }
+
+  package "Gestion des Locations" {
+    usecase "Consulter les demandes" as UA_DEM
+    usecase "Accepter une demande\n(genere facture PDF)" as UA_ACC
+    usecase "Refuser une demande\n(motif obligatoire)" as UA_REF
+    usecase "Valider le paiement\nen especes" as UA_PAY
+    usecase "Remettre les cles\n(PAYEE -> EN_COURS)" as UA_DEMARRER
+    usecase "Cloturer la location\n(EN_COURS -> TERMINEE)" as UA_CLORE
+    usecase "Consulter toutes\nles locations" as UA_LOC
+  }
+
+  package "Gestion des Utilisateurs" {
+    usecase "Consulter la liste\ndes utilisateurs" as UA_USERS
+    usecase "Bannir un utilisateur\n(par n. permis)" as UA_BAN
+    usecase "Debannir un utilisateur" as UA_UNBAN
+  }
+
+  package "Gestion de la Qualite" {
+    usecase "Consulter les\nreclamations" as UA_RECLAM
+    usecase "Repondre a une\nreclamation" as UA_REP
+    usecase "Consulter les avis" as UA_AVIS
+    usecase "Moderer (supprimer)\nun avis" as UA_MOD
+  }
+}
+
+' Liens Admin
+A --> UC_LOGIN
+A --> UC_LOGOUT
+A --> UA_DASH
+A --> UA_VOIT
+A --> UA_MARQ
+A --> UA_CATEG
+A --> UA_EQUIP
+A --> UA_DET
+A --> UA_DEM
+A --> UA_ACC
+A --> UA_REF
+A --> UA_PAY
+A --> UA_DEMARRER
+A --> UA_CLORE
+A --> UA_LOC
+A --> UA_USERS
+A --> UA_BAN
+A --> UA_UNBAN
+A --> UA_RECLAM
+A --> UA_REP
+A --> UA_AVIS
+A --> UA_MOD
+
+' Include / Extend
+UA_ACC ..> UA_DEM : <<include>>
+UA_REF ..> UA_DEM : <<include>>
+UA_PAY ..> UA_ACC : <<precede>>
+UA_DEMARRER ..> UA_PAY : <<precede>>
+UA_CLORE ..> UA_DEMARRER : <<precede>>
+UA_REP ..> UA_RECLAM : <<include>>
+UA_MOD ..> UA_AVIS : <<include>>
+UA_BAN ..> UA_USERS : <<include>>
+UA_UNBAN ..> UA_USERS : <<include>>
+
+@enduml

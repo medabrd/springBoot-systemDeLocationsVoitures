@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><title>Pre-reservation expiree</title></head>
+<body style="font-family: Arial, sans-serif; background:#f4f4f4; margin:0; padding:20px;">
+<div style="max-width:600px; margin:auto; background:#fff; padding:30px; border-radius:8px;">
+    <h2 style="color:#fd7e14;">Pre-reservation expiree</h2>
+    <p>Bonjour <strong th:text="${prenom + ' ' + nom}"></strong>,</p>
+    <p>Votre pre-reservation pour le vehicule <strong th:text="${voiture}"></strong> du <span th:text="${dateDebut}"></span> au <span th:text="${dateFin}"></span> a expire car le paiement n'a pas ete effectue dans les delais.</p>
+    <p>Le vehicule est de nouveau disponible a la location.</p>
+    <p>Vous pouvez deposer une nouvelle demande sur notre site.</p>
+    <p>Cordialement,</p>
+    <p>L'equipe Agence Location Voitures</p>
+</div>
+</body></html>

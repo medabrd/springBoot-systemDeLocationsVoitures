@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!--
+  Fragment de pagination Bootstrap (EF3).
+  Parametres :
+    - page : objet org.springframework.data.domain.Page
+    - urlBase : URL de base sans parametre 'page' (ex: '/catalogue?keyword=foo')
+                Si la chaine contient deja un '?' on ajoute '&page=', sinon '?page='
+-->
+<nav th:fragment="paginer(page, urlBase)" th:if="${page != null and page.totalPages > 1}"
+     aria-label="Pagination">
+    <ul class="pagination justify-content-center mt-4">
+
+        <!-- Precedent -->
+        <li class="page-item" th:classappend="${page.first} ? 'disabled'">
+            <a class="page-link"
+               th:href="@{|${urlBase}${#strings.contains(urlBase, '?') ? '&' : '?'}page=${page.number - 1}|}"
+               aria-label="Precedent">
+                <i class="fa-solid fa-chevron-left"></i>
+            </a>
+        </li>
+
+        <!-- Numeros -->
+        <li class="page-item"
+            th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}"
+            th:classappend="${i == page.number} ? 'active'">
+            <a class="page-link"
+               th:href="@{|${urlBase}${#strings.contains(urlBase, '?') ? '&' : '?'}page=${i}|}"
+               th:text="${i + 1}">1</a>
+        </li>
+
+        <!-- Suivant -->
+        <li class="page-item" th:classappend="${page.last} ? 'disabled'">
+            <a class="page-link"
+               th:href="@{|${urlBase}${#strings.contains(urlBase, '?') ? '&' : '?'}page=${page.number + 1}|}"
+               aria-label="Suivant">
+                <i class="fa-solid fa-chevron-right"></i>
+            </a>
+        </li>
+    </ul>
+
+    <p class="text-center text-muted small">
+        Page <span th:text="${page.number + 1}">1</span> sur
+        <span th:text="${page.totalPages}">1</span>
+        (<span th:text="${page.totalElements}">0</span> elements)
+    </p>
+</nav>
+
+</body>
+</html>
